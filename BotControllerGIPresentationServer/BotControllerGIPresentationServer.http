@@ -1,0 +1,6 @@
+@BotControllerGIPresentationServer_HostAddress = http://localhost:5126
+
+GET {{BotControllerGIPresentationServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
