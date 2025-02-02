@@ -12,8 +12,8 @@ namespace BotControllerGIPresentation
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-            //var identity = new ClaimsIdentity();
+            //var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            var identity = new ClaimsIdentity();
 
             var User = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(User);

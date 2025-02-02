@@ -1,8 +1,6 @@
 using BotControllerGIPresentationServer.ApplicationDbContext;
-
-
-
 using Microsoft.EntityFrameworkCore;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +9,13 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(); 
+builder.Services.AddRazorComponents();
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddOpenApi();
+    
+
 
 var app = builder.Build();
 
@@ -31,7 +32,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");   

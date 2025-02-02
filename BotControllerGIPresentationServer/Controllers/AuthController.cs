@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SharedLibrary;
+using SharedLibrary.DataTransferObjects;
 
 namespace BotControllerGIPresentationServer.Controllers
 {

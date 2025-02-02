@@ -1,16 +1,69 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@attribute [Authorize]
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<HeadContent>
+    <RadzenTheme Theme="material" />
+</HeadContent>
+
+<RadzenLayout>
+    <RadzenHeader Style="background-color:aliceblue;">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+            <RadzenSidebarToggle Style="color:black" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+            <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
+            <AuthorizeView>
+                <Authorized>
+                    <RadzenProfileMenu>
+                        <Template>
+                            <RadzenGravatar Email="user@example.com">
+                            </RadzenGravatar>
+                        </Template>
+                        <ChildContent>
+                            <RadzenProfileMenuItem Text="Профиль" Path="/MyProfil" Icon="account_circle"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="Личные данные" Path="menu" Icon="person_check"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="Настройки" Path="/ProfilSettings" Icon="settings"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="Выход" Path="/Exit" Icon="logout"></RadzenProfileMenuItem>
+                        </ChildContent>
+                    </RadzenProfileMenu>
+                </Authorized>
+                <NotAuthorized>
+                    <RadzenProfileMenu>
+                        <Template>
+                            <RadzenGravatar Email="user@example.com">
+                            </RadzenGravatar>
+                        </Template>
+                        <ChildContent>
+                            <RadzenProfileMenuItem Text="Войти" Path="/login" Icon="account_circle"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="Зарегистрироваться" Path="/signup" Icon="person_add"></RadzenProfileMenuItem>
+                        </ChildContent>
+                    </RadzenProfileMenu>
+                </NotAuthorized>
+            </AuthorizeView>
+        </RadzenStack>
+
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
+            <RadzenPanelMenuItem Text="Users" Icon="account_box" Path="/weather" />
+            <RadzenPanelMenuItem Text="ТТК" Icon="account_box" Path="/ttkTable" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        <div class="rz-p-4">
+            @Body
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </RadzenBody>
+</RadzenLayout>
+
+
+@code {
+    bool sidebar1Expanded = true;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+    }
+}
