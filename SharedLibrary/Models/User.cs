@@ -25,11 +25,13 @@ public partial class User
 
     public int? RoleId { get; set; }
 
-    public string PasswordHash { get; private set; } = string.Empty;
+    public string PasswordHash { get;  set; } = string.Empty;
 
-    public string Email { get; private set; } = string.Empty;
+    public string Email { get;  set; } = string.Empty;
 
     public virtual RolesDim? Role { get; set; }
 
     public virtual SpotsDim? Spot { get; set; }
+
+    
 }

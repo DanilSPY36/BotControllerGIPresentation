@@ -8,10 +8,10 @@
 <RadzenLayout>
     <RadzenHeader Style="background-color:aliceblue;">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
-            <RadzenSidebarToggle Style="color:black" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-            <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
             <AuthorizeView>
                 <Authorized>
+                    <RadzenSidebarToggle Style="color:black" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+                    
                     <RadzenProfileMenu>
                         <Template>
                             <RadzenGravatar Email="user@example.com">
@@ -26,6 +26,7 @@
                     </RadzenProfileMenu>
                 </Authorized>
                 <NotAuthorized>
+                    <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
                     <RadzenProfileMenu>
                         <Template>
                             <RadzenGravatar Email="user@example.com">
@@ -41,18 +42,21 @@
         </RadzenStack>
 
     </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
-            <RadzenPanelMenuItem Text="Users" Icon="account_box" Path="/weather" />
-            <RadzenPanelMenuItem Text="ТТК" Icon="account_box" Path="/ttkTable" />
-        </RadzenPanelMenu>
-    </RadzenSidebar>
+    <AuthorizeView>
+        <Authorized>
+            <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+                <RadzenPanelMenu>
+                    <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
+                    <RadzenPanelMenuItem Text="Users" Icon="account_box" Path="/weather" />
+                    <RadzenPanelMenuItem Text="ТТК" Icon="account_box" Path="/ttkTable" />
+                </RadzenPanelMenu>
+            </RadzenSidebar>
+        </Authorized>
+    </AuthorizeView>
     <RadzenBody>
         <div class="rz-p-4">
             @Body
         </div>
-
     </RadzenBody>
 </RadzenLayout>
 

@@ -1,0 +1,92 @@
+﻿@page "/signup"
+
+<RadzenTemplateForm Data="@LoginUser" Submit="@((User args) => { Submit(args); })" InvalidSubmit=@OnInvalidSubmit
+    Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Style="width: 800px;">
+        <RadzenCard>
+            <RadzenFieldset Text="Данные аккаунта">
+                <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="1rem">
+                    <RadzenFormField Text="Имя" Variant="Variant.Outlined">
+                        <Start>
+                            <RadzenIcon Icon="account_circle" />
+                        </Start>
+                        <ChildContent>
+                            <RadzenTextBox Name="Name" @bind-Value=@LoginUser.Name></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Почта" Variant="Variant.Outlined">
+                        <Start>
+                            <RadzenIcon Icon="account_circle" />
+                        </Start>
+                        <ChildContent>
+                            <RadzenTextBox Name="Email" @bind-Value=@LoginUser.Email></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField  Text="Пароль" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenTextBox Name="Password" @bind-Value="@passwordValue" Visible="@(!passwordVisable)" />
+                            <RadzenPassword Name="RepitPassword" @bind-Value="@passwordValue" Visible="@passwordVisable" />
+                        </ChildContent>
+                        <End>
+                            <RadzenButton Icon="@(passwordVisable ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                        </End>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Повторите пароль" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenTextBox Name="Password" @bind-Value="@passwordValue" Visible="@(!passwordVisable)" />
+                            <RadzenPassword Name="RepitPassword" @bind-Value="@passwordValue" Visible="@passwordVisable" />
+                        </ChildContent>
+                        <End>
+                            <RadzenButton Icon="@(passwordVisable ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                        </End>
+                    </RadzenFormField>
+                </RadzenStack>
+            </RadzenFieldset>
+            <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="margin-top: 1rem">
+
+                <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark" Click="GoToLoginPage"
+                              Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="У меня есть аккаунт" />
+
+                <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
+                              Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
+
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenStack>
+    <RadzenRequiredValidator Component="Name" Text="" />
+    <RadzenRequiredValidator Component="Email" Text="" />
+    <RadzenRequiredValidator Component="Password" Text="" />
+    <RadzenRequiredValidator Component="RepitPassword" Text="" />
+</RadzenTemplateForm>
+
+@code
+{
+    private User LoginUser { get; set; } = new();
+
+    private string passwordValue { get; set; } = string.Empty;
+    private bool passwordVisable { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private void TogglePassword()
+    {
+        passwordVisable = !passwordVisable;
+    }
+
+    private async Task GoToLoginPage()
+    {
+        NavigationManager.NavigateTo("/login", false);
+    }
+
+    private void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+    
+    private async void Submit(User loginUser)
+    {
+
+    }
+}

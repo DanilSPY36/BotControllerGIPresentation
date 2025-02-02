@@ -1,6 +1,12 @@
 using BotControllerGIPresentationServer.ApplicationDbContext;
+using BotControllerGIPresentationServer.GenericRepositories;
+using BotControllerGIPresentationServer.IRepositories;
+using BotControllerGIPresentationServer.IRepositories.UserIRepository;
+using BotControllerGIPresentationServer.Repositories;
+using BotControllerGIPresentationServer.Repositories.UserRepos;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using SharedLibrary.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +20,27 @@ builder.Services.AddRazorComponents();
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddOpenApi();
-    
 
+#region Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<ICategoriesDimRepository, CategoriesDimRepository>();
+builder.Services.AddScoped<ITtkRepository, TtkRepository>();
+builder.Services.AddScoped<IContainerDimRepository, ContainerDimRepository>();
+builder.Services.AddScoped<IVolumesDimRepository, VolumesDimRepository>();
+builder.Services.AddScoped<IKbjuTtkRepository, KbjuTtkRepository>();
+
+builder.Services.AddScoped<IGenericRepository<KbjuTtk>, GenericRepository<KbjuTtk>>();
+builder.Services.AddScoped<IGenericRepository<Ttk>, GenericRepository<Ttk>>();
+builder.Services.AddScoped<IGenericRepository<CategoriesDim>, GenericRepository<CategoriesDim>>();
+builder.Services.AddScoped<IGenericRepository<ContainersDim>, GenericRepository<ContainersDim>>();
+builder.Services.AddScoped<IGenericRepository<VolumesDim>, GenericRepository<VolumesDim>>();
+
+#endregion
+
+#region Storages Uploaders  Repositories
+builder.Services.AddScoped<IUploadRepository, UploadRepository>();
+#endregion
 
 var app = builder.Build();
 
