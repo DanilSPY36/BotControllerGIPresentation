@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
+using System.Net.Http;
 
 namespace BotControllerGIPresentationServer.Controllers.UserControllers
 {
@@ -12,7 +13,6 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _repository;
-
         public UserController(IUserRepository repository)
         {
             _repository = repository;
@@ -51,10 +51,11 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(UserLoginDto userLoginDto)
         {
-            var result = await _repository.Login(userLoginDto.Email, userLoginDto.Password);
-            if (!string.IsNullOrEmpty(result)) 
+            var token = await _repository.Login(userLoginDto.Email, userLoginDto.Password);
+            if (!string.IsNullOrEmpty(token)) 
             {
-                return Ok(result);
+                HttpContext.Response.Cookies.Append("test", token);
+                return Ok(token);
             }
             else 
             {

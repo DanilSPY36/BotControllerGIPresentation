@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.JSInterop;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -6,14 +7,49 @@ namespace BotControllerGIPresentation
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
+        private readonly IJSRuntime _jsRuntime;
+        public CustomAuthStateProvider(IJSRuntime jsRuntime)
+        {
+            _jsRuntime = jsRuntime;
+        }
+
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            //var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-            var identity = new ClaimsIdentity();
+            var cookie = await _jsRuntime.InvokeAsync<string>("eval", "document.cookie");
 
-            var User = new ClaimsPrincipal(identity);
-            var state = new AuthenticationState(User);
+            ClaimsIdentity identity;
+
+            if (!string.IsNullOrEmpty(cookie))
+            {
+                identity = new ClaimsIdentity(ParseClaimsFromJwt(cookie), "jwt");
+            }
+            else
+            {
+                identity = new ClaimsIdentity();
+            }
+
+            var user = new ClaimsPrincipal(identity);
+            var state = new AuthenticationState(user);
+
+            NotifyAuthenticationStateChanged(Task.FromResult(state));
+
+            return state;
+        }
+        public AuthenticationState AuthenticationStateAsync(string cookie)
+        {
+            ClaimsIdentity identity;
+
+            if (!string.IsNullOrEmpty(cookie))
+            {
+                identity = new ClaimsIdentity(ParseClaimsFromJwt(cookie), "jwt");
+            }
+            else
+            {
+                identity = new ClaimsIdentity(); 
+            }
+
+            var user = new ClaimsPrincipal(identity);
+            var state = new AuthenticationState(user);
 
             NotifyAuthenticationStateChanged(Task.FromResult(state));
 

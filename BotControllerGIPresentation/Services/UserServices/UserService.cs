@@ -10,7 +10,6 @@ namespace BotControllerGIPresentation.Services.UserServices
 {
     public class UserService : GenericService<User>, IUserService
     { 
-
         public UserService(HttpClient httpClient) : base(httpClient)
         {
         }

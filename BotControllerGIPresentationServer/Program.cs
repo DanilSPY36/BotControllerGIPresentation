@@ -17,6 +17,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.AddApiAuthentication(configuration: builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddControllersWithViews(); 
@@ -57,12 +58,20 @@ if (app.Environment.IsDevelopment())
     app.UseWebAssemblyDebugging();
 }
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always
+});
+
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");   

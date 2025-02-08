@@ -1,5 +1,5 @@
 ﻿@page "/login"
-
+@inject AuthenticationStateProvider AuthStateProvider
 <RadzenTemplateForm Data="@LoginUser" Submit="@((UserLoginDto args) => { Submit(args); })" Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Style="width: 800px;"> 
         <RadzenCard>
@@ -26,7 +26,7 @@
             </RadzenFieldset>
         </RadzenCard>
         <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
-                      Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
+        Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
     </RadzenStack>
 </RadzenTemplateForm>
 
@@ -51,5 +51,9 @@
     {
         loginUser.Password = passwordValue;
         var res = await UserService.Login(loginUser);
+        if(!string.IsNullOrEmpty(res))
+        {
+            await AuthStateProvider.GetAuthenticationStateAsync();
+        }
     }
 }
