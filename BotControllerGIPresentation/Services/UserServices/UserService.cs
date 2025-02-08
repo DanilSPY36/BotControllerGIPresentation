@@ -46,19 +46,38 @@ namespace BotControllerGIPresentation.Services.UserServices
             throw new NotImplementedException();
         }
 
+        public async Task<bool> Login(UserLoginDto userLoginDto) 
+        {
+            var userFromDB = await _httpClient.GetAsync($"api/User/GetByEmail?email={userLoginDto.Email}");
+
+            if (userFromDB.IsSuccessStatusCode)
+            {
+                var userFromJson = await userFromDB.Content.ReadFromJsonAsync<User>();
+                if (userFromJson != null)
+                {
+                    var confirmPassword = _passwordHasher.Verify(userLoginDto.Password, userFromJson.PasswordHash);
+                    return confirmPassword;
+
+                }
+            }
+            return false;
+        }
         public async Task Register(string userName, string email, string password)
         {
             var hashedPassword = _passwordHasher.Generate(password);
             var user = UserRegisterDto.Create(userName, email, hashedPassword);
-            var response = await _httpClient.PostAsJsonAsync("api/RegisterNewUser", user);
-            if (response.IsSuccessStatusCode)
+            if (user != null) 
             {
-                Console.WriteLine("Пользователь зарегистрирован успешно.");
-            }
-            else
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Ошибка регистрации: {errorMessage}");
+                var response = await _httpClient.PostAsJsonAsync("api/User/RegisterNewUser", user);
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Пользователь зарегистрирован успешно.");
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Ошибка регистрации: {errorMessage}");
+                }
             }
         }
     }

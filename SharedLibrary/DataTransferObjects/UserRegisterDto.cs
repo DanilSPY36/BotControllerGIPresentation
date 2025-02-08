@@ -9,7 +9,11 @@ namespace SharedLibrary.DataTransferObjects
 {
     public class UserRegisterDto
     {
-        private UserRegisterDto(string userName, string password, string email)
+        public UserRegisterDto()
+        {
+        }
+
+        private UserRegisterDto(string userName, string email, string password)
         {
             UserName = userName;
             Password = password;

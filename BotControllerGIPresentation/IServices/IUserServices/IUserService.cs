@@ -1,4 +1,5 @@
 ﻿using BotControllerGIPresentation.GenericService;
+using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
 using System.Runtime.CompilerServices;
 
@@ -9,6 +10,7 @@ namespace BotControllerGIPresentation.IServices.IUserServices
         Task<User> GetByEmail(string email);
         Task<User> GetByPhoneNumber(string phoneNumber);
 
+        Task<bool> Login(UserLoginDto userLoginDto);
         Task Register(string userName, string email, string passwordHash);
     }
 }

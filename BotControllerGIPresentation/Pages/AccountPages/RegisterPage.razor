@@ -1,7 +1,7 @@
 ﻿@page "/signup"
 
-<RadzenTemplateForm Data="@LoginUser" Submit="@((User args) => { Submit(args); })" InvalidSubmit=@OnInvalidSubmit
-    Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+<RadzenTemplateForm Data="@RegisterUserDto" Submit="@((UserRegisterDto args) => { Submit(args); })" InvalidSubmit=@OnInvalidSubmit
+Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Style="width: 800px;">
         <RadzenCard>
             <RadzenFieldset Text="Данные аккаунта">
@@ -11,7 +11,7 @@
                             <RadzenIcon Icon="account_circle" />
                         </Start>
                         <ChildContent>
-                            <RadzenTextBox Name="Name" @bind-Value=@LoginUser.Name></RadzenTextBox>
+                            <RadzenTextBox Name="Name" @bind-Value=@RegisterUserDto.UserName></RadzenTextBox>
                         </ChildContent>
                     </RadzenFormField>
                     <RadzenFormField Text="Почта" Variant="Variant.Outlined">
@@ -19,7 +19,7 @@
                             <RadzenIcon Icon="account_circle" />
                         </Start>
                         <ChildContent>
-                            <RadzenTextBox Name="Email" @bind-Value=@LoginUser.Email></RadzenTextBox>
+                            <RadzenTextBox Name="Email" @bind-Value=@RegisterUserDto.Email></RadzenTextBox>
                         </ChildContent>
                     </RadzenFormField>
                     <RadzenFormField  Text="Пароль" Variant="Variant.Outlined">
@@ -45,10 +45,10 @@
             <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="margin-top: 1rem">
 
                 <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark" Click="GoToLoginPage"
-                              Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="У меня есть аккаунт" />
+                Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="У меня есть аккаунт" />
 
                 <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
-                              Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
+                Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
 
             </RadzenStack>
         </RadzenCard>
@@ -61,7 +61,7 @@
 
 @code
 {
-    private User LoginUser { get; set; } = new();
+    private UserRegisterDto RegisterUserDto { get; set; } = new();
 
     private string passwordValue { get; set; } = string.Empty;
     private bool passwordVisable { get; set; } = true;
@@ -84,9 +84,10 @@
     {
 
     }
-    
-    private async void Submit(User loginUser)
-    {
 
+    private async Task Submit(UserRegisterDto registerUser)
+    {
+        RegisterUserDto.Password = passwordValue;
+        await UserService.Register(registerUser.UserName, registerUser.Email, registerUser.Password);
     }
 }

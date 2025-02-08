@@ -2,6 +2,7 @@
 using BotControllerGIPresentationServer.IRepositories.UserIRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
 
 namespace BotControllerGIPresentationServer.Controllers.UserControllers
@@ -25,7 +26,7 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
         }
 
         [HttpGet("GetByEmail")]
-        public async Task<IActionResult> GetByEmail(string email)
+        public async Task<ActionResult<User>> GetByEmail(string email)
         {
             if (string.IsNullOrEmpty(email))
             {
@@ -57,6 +58,26 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             }
             else { return BadRequest(); }
         }
+
+        [HttpPost("RegisterNewUser")]
+        public async Task<ActionResult<UserRegisterDto>> RegisterNewUser(UserRegisterDto userDto) 
+        {
+            var newUser = new User() 
+            {
+                IsAccess = true,
+                Email = userDto.Email,
+                PasswordHash = userDto.Password,
+                Name = userDto.UserName,
+            };
+            var newUserInDB = await _repository.AddAsync(newUser);
+            return Ok(newUser);
+        }
+        //[HttpGet("LoginUser")]
+        //public async Task<ActionResult<UserLoginDto>> LoginUser(UserLoginDto userDto)
+        //{
+
+        //}
+
         [HttpDelete("Delete/{ItemId:int}")]
         public async Task<ActionResult> Delete(int ItemId)
         {

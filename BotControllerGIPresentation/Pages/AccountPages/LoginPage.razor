@@ -1,6 +1,6 @@
 ﻿@page "/login"
 
-<RadzenTemplateForm Data="@LoginUser" Submit="@((User args) => { Submit(args); })" Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+<RadzenTemplateForm Data="@LoginUser" Submit="@((UserLoginDto args) => { Submit(args); })" Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Style="width: 800px;"> 
         <RadzenCard>
             <RadzenFieldset Text="Данные аккаунта">
@@ -25,12 +25,14 @@
                 </RadzenStack>
             </RadzenFieldset>
         </RadzenCard>
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
+                      Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code 
 {
-    private User LoginUser { get; set; } = new();
+    private UserLoginDto LoginUser { get; set; } = new();
 
     private string passwordValue { get; set; } = string.Empty;
     private bool passwordVisable { get; set; } = true;
@@ -45,8 +47,9 @@
     }
 
 
-    private async void Submit(User loginUser)
+    private async void Submit(UserLoginDto loginUser)
     {
-
+        loginUser.Password = passwordValue;
+        var res = await UserService.Login(loginUser);
     }
 }
