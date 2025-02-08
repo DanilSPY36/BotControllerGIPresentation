@@ -1,4 +1,4 @@
-﻿namespace BotControllerGIPresentation.Interfaces
+﻿namespace BotControllerGIPresentationServer.Auth
 {
     public interface IPasswordHasher
     {

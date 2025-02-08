@@ -48,6 +48,21 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             }
         }
 
+        [HttpPost("Login")]
+        public async Task<ActionResult<string>> Login(UserLoginDto userLoginDto)
+        {
+            var result = await _repository.Login(userLoginDto.Email, userLoginDto.Password);
+            if (!string.IsNullOrEmpty(result)) 
+            {
+                return Ok(result);
+            }
+            else 
+            {
+                return BadRequest(string.Empty);
+            }
+
+        }
+
         [HttpPost("Add")]
         public async Task<ActionResult<User>> Add(User item)
         {

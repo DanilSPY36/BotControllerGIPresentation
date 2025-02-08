@@ -1,7 +1,6 @@
 global using Microsoft.AspNetCore.Components.Authorization;
 using BotControllerGIPresentation;
 using BotControllerGIPresentation.GenericService;
-using BotControllerGIPresentation.Interfaces;
 using BotControllerGIPresentation.IServices;
 using BotControllerGIPresentation.IServices.IUserServices;
 using BotControllerGIPresentation.Services;
@@ -26,7 +25,7 @@ builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 builder.Services.AddHttpClient<IUserService, UserService>(client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);

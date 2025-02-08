@@ -1,10 +1,13 @@
 using BotControllerGIPresentationServer.ApplicationDbContext;
+using BotControllerGIPresentationServer.Auth;
 using BotControllerGIPresentationServer.GenericRepositories;
 using BotControllerGIPresentationServer.IRepositories;
 using BotControllerGIPresentationServer.IRepositories.UserIRepository;
+using BotControllerGIPresentationServer.JWT;
 using BotControllerGIPresentationServer.Repositories;
 using BotControllerGIPresentationServer.Repositories.UserRepos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Radzen;
 using SharedLibrary.Models;
 
@@ -13,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddControllersWithViews(); 
@@ -41,6 +45,8 @@ builder.Services.AddScoped<IGenericRepository<VolumesDim>, GenericRepository<Vol
 #region Storages Uploaders  Repositories
 builder.Services.AddScoped<IUploadRepository, UploadRepository>();
 #endregion
+builder.Services.AddScoped<IUserJwtProvider, UserJwtProvider>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

@@ -1,5 +1,4 @@
 ﻿using BotControllerGIPresentation.GenericService;
-using BotControllerGIPresentation.Interfaces;
 using BotControllerGIPresentation.IServices.IUserServices;
 using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
@@ -11,11 +10,9 @@ namespace BotControllerGIPresentation.Services.UserServices
 {
     public class UserService : GenericService<User>, IUserService
     { 
-        private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(HttpClient httpClient, IPasswordHasher passwordHasher) : base(httpClient)
+        public UserService(HttpClient httpClient) : base(httpClient)
         {
-            _passwordHasher = passwordHasher;
         }
 
         public async Task<User> GetByEmail(string email)
@@ -46,25 +43,24 @@ namespace BotControllerGIPresentation.Services.UserServices
             throw new NotImplementedException();
         }
 
-        public async Task<bool> Login(UserLoginDto userLoginDto) 
+        public async Task<string> Login(UserLoginDto userLoginDto) 
         {
-            var userFromDB = await _httpClient.GetAsync($"api/User/GetByEmail?email={userLoginDto.Email}");
 
-            if (userFromDB.IsSuccessStatusCode)
+            var response = await _httpClient.PostAsJsonAsync($"api/User/Login", userLoginDto);
+
+            if (response.IsSuccessStatusCode) 
             {
-                var userFromJson = await userFromDB.Content.ReadFromJsonAsync<User>();
-                if (userFromJson != null)
-                {
-                    var confirmPassword = _passwordHasher.Verify(userLoginDto.Password, userFromJson.PasswordHash);
-                    return confirmPassword;
-
-                }
+                var token = await response.Content.ReadAsStringAsync();
+                return token;
             }
-            return false;
+            else
+            {
+                return string.Empty;
+            }
         }
         public async Task Register(string userName, string email, string password)
         {
-            var hashedPassword = _passwordHasher.Generate(password);
+            /*var hashedPassword = _passwordHasher.Generate(password);
             var user = UserRegisterDto.Create(userName, email, hashedPassword);
             if (user != null) 
             {
@@ -78,7 +74,7 @@ namespace BotControllerGIPresentation.Services.UserServices
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"Ошибка регистрации: {errorMessage}");
                 }
-            }
+            }*/
         }
     }
 }

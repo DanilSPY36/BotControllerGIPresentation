@@ -1,6 +1,9 @@
 ﻿using BotControllerGIPresentationServer.ApplicationDbContext;
+using BotControllerGIPresentationServer.Auth;
 using BotControllerGIPresentationServer.GenericRepositories;
 using BotControllerGIPresentationServer.IRepositories.UserIRepository;
+using BotControllerGIPresentationServer.JWT;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Models;
 
@@ -8,8 +11,55 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(AppDbContext context) : base(context)
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly IUserJwtProvider _userJwtProvider;
+        public UserRepository(AppDbContext context, IPasswordHasher passwordHasher, IUserJwtProvider userJwtProvider) : base(context)
         {
+            _passwordHasher = passwordHasher;
+            _userJwtProvider = userJwtProvider;
+        }
+
+        public async Task<User> Register(string userName, string email, string password)
+        {
+            var hashedPassword = _passwordHasher.Generate(password);
+            var user = new User()
+            {
+                Name = userName,
+                Email = email,
+                PasswordHash = hashedPassword
+            };
+            var result = await _context.AddAsync(user);
+            if (result is not null) 
+            {
+                return result.Entity;
+            }
+            else
+            {
+                return null!;
+            }
+        }
+
+        public async  Task<string> Login(string email, string password)
+        {
+            var userFromDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (userFromDb is not null) 
+            {
+                var result = _passwordHasher.Verify(password, userFromDb.PasswordHash);
+                if(result == true) 
+                {
+                    var JwtToken = _userJwtProvider.GenerateToken(userFromDb);
+                    return JwtToken;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public async Task<User> GetByEmail(string email)
