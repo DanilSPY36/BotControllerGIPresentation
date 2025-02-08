@@ -19,7 +19,7 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
             _userJwtProvider = userJwtProvider;
         }
 
-        public async Task<User> Register(string userName, string email, string password)
+        public async Task<string> Register(string userName, string email, string password)
         {
             var hashedPassword = _passwordHasher.Generate(password);
             var user = new User()
@@ -29,13 +29,15 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
                 PasswordHash = hashedPassword
             };
             var result = await _context.AddAsync(user);
+            await _context.SaveChangesAsync();
             if (result is not null) 
             {
-                return result.Entity;
+                var JwtToken = _userJwtProvider.GenerateToken(result.Entity);
+                return JwtToken;
             }
             else
             {
-                return null!;
+                return string.Empty;
             }
         }
 

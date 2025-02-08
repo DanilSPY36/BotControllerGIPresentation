@@ -58,23 +58,18 @@ namespace BotControllerGIPresentation.Services.UserServices
                 return string.Empty;
             }
         }
-        public async Task Register(string userName, string email, string password)
+        public async Task<string> Register(UserRegisterDto userRegisterDto)
         {
-            /*var hashedPassword = _passwordHasher.Generate(password);
-            var user = UserRegisterDto.Create(userName, email, hashedPassword);
-            if (user != null) 
+            var response = await _httpClient.PostAsJsonAsync($"api/User/Register", userRegisterDto);
+            if (response.IsSuccessStatusCode) 
             {
-                var response = await _httpClient.PostAsJsonAsync("api/User/RegisterNewUser", user);
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("Пользователь зарегистрирован успешно.");
-                }
-                else
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Ошибка регистрации: {errorMessage}");
-                }
-            }*/
+                var token = await response.Content.ReadAsStringAsync();
+                return token;
+            }
+            else 
+            {
+                return string.Empty;
+            }
         }
     }
 }

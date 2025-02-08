@@ -74,24 +74,20 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             else { return BadRequest(); }
         }
 
-        [HttpPost("RegisterNewUser")]
-        public async Task<ActionResult<UserRegisterDto>> RegisterNewUser(UserRegisterDto userDto) 
+        [HttpPost("Register")]
+        public async Task<ActionResult<string>> Register(UserRegisterDto userDto) 
         {
-            var newUser = new User() 
+            
+            var token = await _repository.Register(userDto.UserName, userDto.Email, userDto.Password);
+            if (token is not null)
             {
-                IsAccess = true,
-                Email = userDto.Email,
-                PasswordHash = userDto.Password,
-                Name = userDto.UserName,
-            };
-            var newUserInDB = await _repository.AddAsync(newUser);
-            return Ok(newUser);
+                return Ok(token); 
+            }
+            else
+            {
+                return BadRequest(string.Empty);
+            }
         }
-        //[HttpGet("LoginUser")]
-        //public async Task<ActionResult<UserLoginDto>> LoginUser(UserLoginDto userDto)
-        //{
-
-        //}
 
         [HttpDelete("Delete/{ItemId:int}")]
         public async Task<ActionResult> Delete(int ItemId)

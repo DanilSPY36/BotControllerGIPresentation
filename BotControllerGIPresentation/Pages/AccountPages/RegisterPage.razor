@@ -88,6 +88,6 @@ Style="display: flex; justify-content: center; align-items: center; height: 80vh
     private async Task Submit(UserRegisterDto registerUser)
     {
         RegisterUserDto.Password = passwordValue;
-        await UserService.Register(registerUser.UserName, registerUser.Email, registerUser.Password);
+        var token = await UserService.Register(registerUser);
     }
 }
