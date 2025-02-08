@@ -24,7 +24,18 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             var items = await _repository.GetAllAsync();
             return Ok(items);
         }
-
+        [HttpGet("GetTEST")]
+        public async Task<ActionResult<IEnumerable<User>>> GetTEST()
+        {
+            if (HttpContext.Request.Cookies.TryGetValue("test", out var cookieValue))
+            {
+                return Ok(cookieValue);
+            }
+            else
+            {
+                return Ok();
+            }
+        }
         [HttpGet("GetByEmail")]
         public async Task<ActionResult<User>> GetByEmail(string email)
         {

@@ -52,8 +52,9 @@
         loginUser.Password = passwordValue;
         var res = await UserService.Login(loginUser);
         if(!string.IsNullOrEmpty(res))
-        {
+        { 
             await AuthStateProvider.GetAuthenticationStateAsync();
         }
+        StateHasChanged();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.JSInterop;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -8,14 +7,16 @@ namespace BotControllerGIPresentation
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly IJSRuntime _jsRuntime;
-        public CustomAuthStateProvider(IJSRuntime jsRuntime)
+        private readonly HttpClient _httpClient;
+        public CustomAuthStateProvider(IJSRuntime jsRuntime, HttpClient httpClient)
         {
             _jsRuntime = jsRuntime;
+            _httpClient = httpClient;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var cookie = await _jsRuntime.InvokeAsync<string>("eval", "document.cookie");
+            var cookie = await _httpClient.GetStringAsync($"api/User/GetTEST");
 
             ClaimsIdentity identity;
 
