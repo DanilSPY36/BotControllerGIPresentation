@@ -45,8 +45,7 @@
     </RadzenCard>
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="width: 100%; margin-top: 40px;">
         <RadzenAlert Visible="@alertVisible" AlertStyle="AlertStyle.Danger" Variant="Variant.Filled" Shade="Shade.Lighter" Style="position: fixed; width: 500px;">
-            Пользователь не найден!
-            Проверьте введенные данные.
+            @AlertText
         </RadzenAlert>
     </RadzenStack>
 </RadzenStack>
@@ -93,9 +92,86 @@
         var token = await UserService.Register(registerUser);
     }
     private async Task Submit()
-    { 
-        if()
+    {
+        if (string.IsNullOrEmpty(RegisterUserDto.UserName))
+        {
+            SetAlert("Необходимо ввести имя пользователя.");
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrEmpty(RegisterUserDto.Email))
+        {
+            SetAlert("Необходимо ввести название почты.");
+            StateHasChanged();
+            return;
+        }
+
+        if (!IsValidEmail(RegisterUserDto.Email))
+        {
+            SetAlert("Некорректный адрес электронной почты.");
+            StateHasChanged();
+            return;
+        }
+        else
+        {
+            var response = await UserService.CheckUserEmail(RegisterUserDto.Email);
+            if (!response)
+            {
+                SetAlert("Адрес электронной почты уже занят.");
+                StateHasChanged();
+                return;
+            }
+        }
+
+        if (string.IsNullOrEmpty(passwordValue))
+        {
+            SetAlert("Необходимо ввести пароль.");
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrEmpty(repitPasswordValue))
+        {
+            SetAlert("Необходимо повторно ввести пароль.");
+            StateHasChanged();
+            return;
+        }
+
+        if (passwordValue != repitPasswordValue)
+        {
+            SetAlert("Пароли не совпадают.");
+            StateHasChanged();
+            return;
+        }
+
+        if (!IsValidPassword(passwordValue))
+        {
+            SetAlert("Пароль должен быть более 5 символов, содержать заглавные буквы и цифры.");
+            StateHasChanged();
+            return;
+        }
         RegisterUserDto.Password = passwordValue;
         var token = await UserService.Register(RegisterUserDto);
+        alertVisible = false;
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/", false);
+    }
+
+    private void SetAlert(string message)
+    {
+        AlertText = message;
+        alertVisible = true;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        return System.Text.RegularExpressions.Regex.IsMatch(email, emailPattern);
+    }
+    private bool IsValidPassword(string password)
+    {
+        var passwordPattern = @"^(?=.*[A-Z])(?=.*[0-9]).{6,}$";
+        return System.Text.RegularExpressions.Regex.IsMatch(password, passwordPattern);
     }
 }

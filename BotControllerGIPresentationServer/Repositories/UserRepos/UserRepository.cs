@@ -81,7 +81,15 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
                 return userFromDb;
             }
         }
-
+        public async Task<bool> CheckUserEmail(string userDtoEmail) 
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDtoEmail);
+            if(user is not null) 
+            {
+                return false;
+            }
+            else {  return true; }
+        }
         public Task<User> GetByPhoneNumber(string phoneNumber)
         {
             throw new NotImplementedException();

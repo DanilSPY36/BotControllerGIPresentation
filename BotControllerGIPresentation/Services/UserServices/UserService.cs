@@ -41,7 +41,18 @@ namespace BotControllerGIPresentation.Services.UserServices
         {
             throw new NotImplementedException();
         }
-
+        public async Task<bool> CheckUserEmail(string userDtoEmail)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"api/User/CheckUserEmail", userDtoEmail);
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
         public async Task<string> Login(UserLoginDto userLoginDto) 
         {
 

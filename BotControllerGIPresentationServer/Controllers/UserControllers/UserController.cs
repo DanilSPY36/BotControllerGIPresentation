@@ -93,7 +93,19 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             }
             else { return BadRequest(); }
         }
-
+        [HttpPost("CheckUserEmail")]
+        public async Task<ActionResult<bool>> CheckUserEmail([FromBody] string userDtoEmail) 
+        {
+            var result = await _repository.CheckUserEmail(userDtoEmail);
+            if (result) 
+            {
+                return Ok(result);
+            }
+            else 
+            {
+                return BadRequest(result);
+            }
+        }
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(UserRegisterDto userDto) 
         {
@@ -101,6 +113,7 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             var token = await _repository.Register(userDto.UserName, userDto.Email, userDto.Password);
             if (token is not null)
             {
+                HttpContext.Response.Cookies.Append("test", token);
                 return Ok(token); 
             }
             else

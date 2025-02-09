@@ -9,5 +9,6 @@ namespace BotControllerGIPresentationServer.IRepositories.UserIRepository
         Task<string> Register(string userName, string email, string password);
         Task<User> GetByEmail(string email);
         Task<User> GetByPhoneNumber(string phoneNumber);
+        Task<bool> CheckUserEmail(string userDtoEmail);
     }
 }
