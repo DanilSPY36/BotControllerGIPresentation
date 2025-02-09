@@ -1,0 +1,363 @@
+﻿@inject ISessionStorageGenericService<CategoriesDim> SessionStorageService
+
+@if (showWait)
+{
+    <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <RadzenStack Orientation="Orientation.Vertical">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenText TextStyle="TextStyle.H5" Style="margin-top: 5px;" Text="Категории"></RadzenText>
+            <RadzenButton Click="DialogOnClose" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="close"></RadzenButton>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenDataGrid TItem="CategoriesDim"
+            Data=@CategoriesDims @ref="CategoryDG" SelectionMode="DataGridSelectionMode.Single" @bind-Value="@SelectedCategory"
+            PageSize="20" AllowColumnResize="true" AllowPaging="true" EditMode="DataGridEditMode.Single"
+            RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow"
+            Style="--rz-grid-header-font-weight: bold;  width: contain; min-width: 400px;">
+                <HeaderTemplate>
+                    <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Icon="add" Click="@AddNewCategory" Disabled="@(EditMode)" 
+                    MouseEnter="@(args => TooltipService.Open(args, $"Добавить новую категорию",
+                              new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                    MouseLeave="@(args => TooltipService.Close())" />
+
+                    <RadzenSwitch @bind-Value=@CascadingDelete Change=@(args => OnCascadingDeleteChange(args)) 
+                    InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Switch value" }})"
+                    Style="--rz-switch-checked-background-color: #F19C98;
+                                 --rz-switch-checked-circle-background-color: #ff4d4d;
+                                 --rz-switch-unchecked-background-color: #ffcccc;
+                                 --rz-switch-unchecked-circle-background-color: #ffffff;
+                                 margin-left: 10px;"
+                    MouseEnter="@(args => TooltipService.Open(args, $"Удаление категории вместе с тех. картами",
+                              new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-danger-light); color: var(--rz-text-contrast-color)" }) )"
+                    MouseLeave="@(args => TooltipService.Close())" />
+                </HeaderTemplate>
+                <EmptyTemplate>
+                    <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">упс.. У вас нет категорий</p>
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn Title="Название категории" TItem="CategoriesDim" Property="@nameof(CategoriesDim.Category)" MinWidth="100px" Width="140px">
+                        <EditTemplate Context="item">
+                            <RadzenTextBox Style="width: 100%; min-width: 135px;" @bind-Value="item.Category"></RadzenTextBox>
+                        </EditTemplate>
+                        <Template Context="item">
+                            <RadzenText style="white-space:pre-wrap">@item.Category</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn Title="Краткое описание" TItem="CategoriesDim" Property="@nameof(CategoriesDim.Description)" MinWidth="150px"  Width="200px">
+                        <EditTemplate Context="item">
+                            <RadzenTextBox Style="width: 100%; min-width:190px;" @bind-Value="item.Description"></RadzenTextBox>
+                        </EditTemplate>
+                        <Template Context="item">
+                            <RadzenText TextStyle="TextStyle.Caption" style="white-space:pre-wrap">@item.Description</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="CategoriesDim" TextAlign="TextAlign.Center" MinWidth="40px" Width="50px">
+                        <Template Context="item">
+                            <RadzenButton Visible="item.Id != 0" Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditCategory(item))"
+                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Category}",
+                                    new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                            MouseLeave="@(args => TooltipService.Close())" />
+                            <RadzenButton Visible="item.Id != 0"
+                            Icon="delete"
+                            ButtonStyle="@buttonForDeleteStyle"
+                            Variant="Variant.Text"
+                            Click="@(args => DeleteCategory(item))"
+                            Class="button-hover"
+                            MouseEnter="@(args => OnMouseDeleteEnter(args, item.Category))"
+                            MouseLeave="@(args => OnMouseDeleteEnter(args))" />
+                        </Template>
+                        <EditTemplate Context="item">
+                            <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => SaveChangesCategory(item))"
+                            MouseEnter="@(args => TooltipService.Open(args, $"Сохранить {item.Category}",
+                          new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                            MouseLeave="@(args => TooltipService.Close())" />
+
+                            <RadzenButton Icon="cancel" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CancelEdit(item))"
+                            MouseEnter="@(args => TooltipService.Open(args, $"Оттменить изменения {item.Category}",
+                          new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                            MouseLeave="@(args => TooltipService.Close())" />
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+
+                </Columns>
+
+            </RadzenDataGrid>
+            <RadzenCard>
+                @if (SelectedCategory is not null)
+                {
+                    <RadzenDataGrid Data="@(SelectedCategory!.Count != 0 ?  SelectedCategory.First().Ttks : new List<Ttk>())" TItem="Ttk" 
+                    Style="--rz-grid-header-font-weight: bold;  width: contain; min-width: 250px;" Density="Density.Compact">
+                        <EmptyTemplate>
+                            <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">В выбранной категории нет тех. карт</p>
+                        </EmptyTemplate>
+                        <Columns>
+                            <RadzenDataGridColumn Title="Название" TItem="Ttk" Property="@nameof(Ttk.Name)" TextAlign="TextAlign.Center"></RadzenDataGridColumn>
+                            <RadzenDataGridColumn Title="Объем" TItem="Ttk" Property="Volume.Volume" TextAlign="TextAlign.Center"></RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                }
+            </RadzenCard>
+        </RadzenStack>
+
+    </RadzenStack>
+
+    <style>
+        .red-icon {
+        color: red; /* Цвет иконки при наведении */
+        }
+
+        .button-hover {
+        transition: color 0.3s ease; /* Плавный переход цвета */
+        }
+    </style>
+}
+
+
+@code 
+{
+    private bool showWait = true;
+
+    [Parameter]
+    public List<VolumesDim>? VolumesDims { get; set; }
+
+    [Parameter]
+    public List<CategoriesDim>? CategoriesDims { get; set; }
+    private RadzenDataGrid<CategoriesDim> CategoryDG { get; set; } = new();
+    private IList<CategoriesDim> SelectedCategory { get; set; } = new List<CategoriesDim>();
+
+    private RadzenDataGrid<Ttk> TtkDg { get; set; } = new();
+
+    private CategoriesDim? ItemToInsert { get; set; }
+    private CategoriesDim? ItemToUpdate { get; set; }
+    private CategoriesDim? DeepCopyUpdateitem { get; set; }
+
+    private bool EditMode { get; set; } = false;
+
+    private bool CascadingDelete { get; set; } = false;
+
+    private ButtonStyle buttonForDeleteStyle = ButtonStyle.Danger;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCategoryTtks();
+        showWait = false;
+    }
+
+    private async Task GetCategoryTtks()
+    {
+        if(CategoriesDims is not null)
+        {
+            SelectedCategory.Add(CategoriesDims.First());
+            foreach (var item in CategoriesDims)
+            {
+                item.Ttks = (await TtkService.GetTtkItemsByCategoryId(item.Id)).ToList();
+            }
+        }
+    }
+
+
+    private async Task AddNewCategory()
+    {
+        TooltipService.Close();
+        EditMode = true;
+        ItemToInsert = new();
+        await CategoryDG.InsertRow(ItemToInsert);
+    }
+
+    private async Task OnCreateRow(CategoriesDim updateCatrgory)
+    {
+        EditMode = true;
+        TooltipService.Close();
+        ItemToInsert = updateCatrgory;
+        await CategoryDG.EditRow(updateCatrgory);
+    }
+
+
+    private async Task EditCategory(CategoriesDim CategoryforUpdate)
+    {
+        EditMode = true;
+        TooltipService.Close();
+        await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, CategoryforUpdate);
+        DeepCopyUpdateitem = await SessionStorageService.CreateDeepCopy(jsRuntime, CategoryforUpdate);
+        ItemToUpdate = CategoryforUpdate;
+        await CategoryDG.EditRow(CategoryforUpdate);
+
+    }
+
+    private void CancelEdit(CategoriesDim item)
+    {
+        EditMode = false;
+        TooltipService.Close();
+        ItemToInsert = null!;
+        ItemToUpdate = null!;
+        if (DeepCopyUpdateitem is not null)
+        {
+            item.Id = DeepCopyUpdateitem.Id;
+            item.Category = DeepCopyUpdateitem.Category;
+            item.Description = DeepCopyUpdateitem.Description;
+            item.Ttks = DeepCopyUpdateitem.Ttks;
+            CategoryDG.CancelEditRow(item);
+        }
+        else
+        {
+            CategoryDG.CancelEditRow(item);
+        }
+    }
+
+    private async Task SaveChangesCategory(CategoriesDim changedCategory)
+    {
+        EditMode = false;
+        TooltipService.Close();
+        if (ItemToInsert is not null)
+        {
+            var result = await CategoriesDimService.AddAsync(changedCategory);
+            if (result is not null)
+            {
+                CategoriesDims?.Add(result);
+            }
+            ItemToInsert = null!;
+        }
+        if (ItemToUpdate is not null)
+        {
+            var result = await CategoriesDimService.UpdateAsync(ItemToUpdate);
+            if (result is not null)
+            {
+                await CategoryDG.UpdateRow(result);
+                CategoryDG.CancelEditRow(changedCategory);
+            }
+            ItemToUpdate = null!;
+        }
+
+        await CategoryDG.Reload();
+    }
+
+    private async Task DeleteCategory(CategoriesDim CategoryForDelete)
+    {
+        TooltipService.Close();
+        var ttkres = await TtkService.GetTtkItemsByCategoryId(CategoryForDelete.Id);
+
+        // проверка есть ли у категории объекты
+        if (ttkres.Count() != 0)
+        {
+            if (CascadingDelete)
+            {
+                var dialogResult = await DialogService.OpenAsync("", ds =>
+    @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
+        <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить категорию вместе с тех. картами?"></RadzenText>
+        <RadzenText Text="При удалении категории также будут удалены технические карты и вся связанная информация."
+                    TextStyle="TextStyle.DisplayH6" class="rz-color-danger-dark rz-text-wrap"></RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                            <RadzenButton Icon="close" Text="Отмена" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" />
+                            <RadzenButton Icon="delete_forever" Text="Удалить" Click="() => ds.Close(true)" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Outlined" />
+                    </RadzenStack>
+    </RadzenStack>, new DialogOptions() { Style = "width: 600px;", Resizable = false, Draggable = true, ShowClose = false });
+                if (dialogResult == true)
+                {
+                    var result = await CategoriesDimService.DeleteAsync(CategoryForDelete.Id);
+                    if (result)
+                    {
+                        CategoriesDims?.Remove(CategoryForDelete);
+                        await CategoryDG.Reload();
+                    }
+                }
+            }
+            else
+            {
+                var dialogResult = await DialogService.OpenAsync("",ds =>
+    @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
+        <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить категорию?"></RadzenText>
+                    <RadzenText Text="Категория будет удалена. Тех. карты данной категории присвоятся базовой категории"
+                    TextStyle="TextStyle.DisplayH6" class="rz-color-danger-dark rz-text-wrap"></RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                        <RadzenButton Icon="close" Text="Отмена" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" />
+                        <RadzenButton Icon="delete_forever" Text="Удалить" Click="() => ds.Close(true)" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Outlined" />
+                    </RadzenStack>
+    </RadzenStack>
+    , new DialogOptions() { Style = "width: 600px;", Resizable = false, Draggable = true, ShowClose = false });
+
+                if (dialogResult == true)
+                {
+                    foreach (var item in CategoryForDelete.Ttks)
+                    {
+                        item.CategoryId = 0; // назвачение базовой категории всем объектам этой категории
+                        item.Category = null;
+                        item.Volume = null;
+                        var testItem = await TtkService.UpdateAsync(item);
+                        testItem.Volume = VolumesDims?.Where(x => x.Id == item.VolumeId).First();
+                        CategoriesDims?.Where(x => x.Id == 0).First().Ttks.Add(testItem);
+                    }
+                    CategoryForDelete.Ttks = null!;
+                    var result = await CategoriesDimService.DeleteAsync(CategoryForDelete.Id);
+                    if (result)
+                    {
+                        CategoriesDims?.Remove(CategoryForDelete);
+                        await CategoryDG.Reload();
+                    }
+                }
+            }
+        }
+        else
+        {
+            var result = await CategoriesDimService.DeleteAsync(CategoryForDelete.Id);
+            if (result)
+            {
+                CategoriesDims?.Remove(CategoryForDelete);
+                await CategoryDG.Reload();
+            }
+        }
+
+
+    }
+
+    private async Task OnUpdateRow(CategoriesDim newCatrgory)
+    {
+        EditMode = false;
+        TooltipService.Close();
+        ItemToInsert = null!;
+        ItemToUpdate = null!;
+        if (ItemToUpdate is not null)
+        {
+            var result = await CategoriesDimService.UpdateAsync(ItemToUpdate);
+            if (result is not null)
+            {
+                await CategoryDG.UpdateRow(result);
+            }
+            ItemToUpdate = null!;
+        }
+    }
+
+    private void OnCascadingDeleteChange(bool? value)
+    {
+    }
+
+    private void OnMouseDeleteEnter(ElementReference args, string category)
+    {
+        TooltipService.Open(args, $"Удалить {category}",
+            new TooltipOptions()
+                {
+                    Position = TooltipPosition.Left,
+                    Delay = 500,
+                    Duration = 5000,
+                    Style = "background: var(--rz-base-300); color: var(--rz-text-color)"
+                });
+        //buttonForDeleteStyle = ButtonStyle.Danger;
+    }
+
+    private void OnMouseDeleteEnter(ElementReference args)
+    {
+        TooltipService.Close();
+        //buttonForDeleteStyle = ButtonStyle.Dark;
+    }
+
+    private void DialogOnClose()
+    {
+        DialogService.Close(CategoriesDims);
+    }
+
+}

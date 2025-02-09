@@ -37,10 +37,6 @@ namespace BotControllerGIPresentation.Services.UserServices
             }
         }
 
-        public async Task<User> GetByPhoneNumber(string phoneNumber)
-        {
-            throw new NotImplementedException();
-        }
         public async Task<bool> CheckUserEmail(string userDtoEmail)
         {
             var response = await _httpClient.PostAsJsonAsync($"api/User/CheckUserEmail", userDtoEmail);

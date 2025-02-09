@@ -1,0 +1,350 @@
+﻿@page "/ttkTable"
+@using System.Text.Json
+
+@inject ISessionStorageGenericService<Ttk> SessionStorageService
+
+<RadzenTooltip />
+<RadzenDialog />
+
+@if (showWait)
+{
+    <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <CustomHeader>
+        <Left_Side>
+
+            <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+            Style="margin-left: 10px; margin: 5px;"
+            Click="@AddNewTtkItem"
+            MouseEnter="@(args => TooltipService.Open(args, "Добавить тех. карту",
+                          new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+            MouseLeave="@(args => TooltipService.Close())" />
+
+            <RadzenSelectBar @bind-Value=@CardsOrTableView TValue="bool" Style="margin-left: 10px; margin: 5px;">
+                <Items>
+                    <RadzenSelectBarItem Icon="table" Value="true" />
+                    <RadzenSelectBarItem Icon="package_2" Value="false" />
+                </Items>
+            </RadzenSelectBar>
+
+
+            <RadzenDropDown @bind-Value=@ChoseCategoryDim Data=@CategoriesDimsList
+            SelectedItemsText="Категорий выбрано" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+            AllowClear=true Chips=true MaxSelectedLabels="2" @bind-SearchText=SearchTextForCategory
+            Placeholder="Категории" Multiple=true
+            Style="width: 300px; max-width: 400px; margin-left: 10px; max-height: 45px;" TextProperty="@nameof(CategoriesDim.Category)"
+            Name="DropDownBindValue" Change="@(args => OnChangeCategory(args))" />
+
+            <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+            Style="margin-left: -7px;"
+            Click="@AddNewCategory"
+            MouseEnter="@(args => TooltipService.Open(args, "Добавить категорию",
+                              new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+            MouseLeave="@(args => TooltipService.Close())" />
+
+
+
+            <RadzenDropDown @bind-Value=@ChoseVolumesDim Data=@VolumesDimsList
+            SelectedItemsText="Объема выбрано"
+            AllowClear=true Chips=true MaxSelectedLabels="3" 
+            Placeholder="Объемы" Multiple=true
+            Style="width: 300px; max-width: 400px; margin-left: 10px; max-height: 45px;" TextProperty="@nameof(VolumesDim.Volume)"
+            Name="DropDownBindValue" Change="@(args => OnChangeVolumes(args))" />
+
+            <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+            Style="margin-left: -7px;"
+            Click="@AddNewVolume" 
+            MouseEnter="@(args => TooltipService.Open(args, "Добавить объем",
+                          new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+            MouseLeave="@(args => TooltipService.Close())" />
+
+        </Left_Side>
+        <Right_Side>
+            <RadzenSwitch @bind-Value=@showWarringMessage InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Switch value" }})" Style="max-width: 400px; margin-right: 10px;"
+            MouseEnter="@(args => TooltipService.Open(args, "Отключить предупреждение об удалении объекта?",
+                          new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+            MouseLeave="@(args => TooltipService.Close())" />
+        </Right_Side>
+    </CustomHeader>
+    <RadzenDataGrid @ref="TtkDG" Data="@TtkList" TItem="Ttk"
+    AllowFiltering="false" AllowSorting="false" AllowPaging="true" PageSize="25"
+    Style="height: calc(100vh - 185px); --rz-grid-header-font-weight: bold;"
+    AllowColumnResize="true" ShowCellDataAsTooltip="true" EditMode="DataGridEditMode.Single">
+        <EmptyTemplate>
+            <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">УПС. Ничего не нашли...</p>
+        </EmptyTemplate>
+        <Columns>
+            <RadzenDataGridColumn Title="Название" TItem="Ttk" Property="Name" Width="160">
+                <EditTemplate Context="item">
+                    <RadzenTextBox @bind-Value=@item.Name />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Посуда" TItem="Ttk" Property="Container.Container">
+                <EditTemplate Context="item">
+                    <RadzenDropDown @bind-Value=@item.Container Data=@ContainersDimList
+                    Style="width: 100%; max-width: 400px;" TextProperty="@nameof(ContainersDim.Container)"
+                    Name="DropDownBindValue" Change="@(args => OnChangeContainerForInsertItem(item.Container!))" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Описание" TItem="Ttk" Property="Description">
+                <Template Context="item">
+                    <RadzenText TextStyle="TextStyle.Caption" style="white-space:pre-wrap">@item.Description</RadzenText>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Ингридиенты" TItem="Ttk" Property="Ingridients">
+                <Template Context="item">
+                    <RadzenText TextStyle="TextStyle.Caption" style="white-space:pre-wrap">@item.Ingridients</RadzenText>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="" TItem="Ttk" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="156px">
+                <Template Context="item">
+                    <RadzenButton Icon="content_copy" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CopyRow(item))"
+                    MouseEnter="@(args => TooltipService.Open(args, $"Создание по шаблону {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
+                          new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                    MouseLeave="@(args => TooltipService.Close())" />
+                    <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditRow(item))"
+                    MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
+                          new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                    MouseLeave="@(args => TooltipService.Close())" />
+                    <RadzenButton Icon="delete" ButtonStyle="@buttonForDeleteStyle" Variant="Variant.Text" Click="@(args => DeleteRow(item))"
+                    Class="button-hover"
+                    MouseEnter="@(args => OnMouseDeleteEnter(args, $"{item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}"))"
+                    MouseLeave="@(args => OnMouseDeleteEnter(args))" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+    <style>
+        .red-icon {
+        color: red !important; /* Цвет иконки при наведении */
+        }
+
+        .button-hover {
+        transition: color 0.3s ease; /* Плавный переход цвета */
+        }
+    </style>
+
+}
+
+@code
+{
+    private bool showWait = true;
+    private bool CardsOrTableView = true;
+
+    private List<Ttk> TtkList { get; set; } = new List<Ttk>();
+    private List<Ttk>? FullTtkList { get; set; }
+    private RadzenDataGrid<Ttk> TtkDG { get; set; } = new RadzenDataGrid<Ttk>();
+
+
+    private IEnumerable<CategoriesDim> CategoriesDimsList { get; set; } = new List<CategoriesDim>();
+    private IEnumerable<CategoriesDim>? ChoseCategoryDim { get; set; }
+    private string CategorySearchText = "";
+    private string SearchTextForCategory
+    {
+        get
+        {
+            return CategorySearchText;
+        }
+        set
+        {
+            if (CategorySearchText != value)
+            {
+                CategorySearchText = value;
+            }
+        }
+    }
+
+
+    private IEnumerable<ContainersDim> ContainersDimList { get; set; } = new List<ContainersDim>();
+    private int choseContainersDimId { get; set; } = new();
+
+
+    private IEnumerable<VolumesDim> VolumesDimsList { get; set; } = new List<VolumesDim>();
+    private IEnumerable<VolumesDim>? ChoseVolumesDim { get; set; }
+
+
+    private Ttk? itemToInsert { get; set; }
+    private Ttk? itemToUpdate { get; set; }
+
+
+    private bool showWarringMessage = true;
+
+    private ButtonStyle buttonForDeleteStyle = ButtonStyle.Dark;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        VolumesDimsList = await VolumesDimService.GetAllAsync();
+        ChoseVolumesDim = VolumesDimsList.ToList();
+
+        ContainersDimList = await ContainerDimService.GetAllAsync();
+
+
+        CategoriesDimsList = await CategoriesDimService.GetAllAsync();
+        ChoseCategoryDim = CategoriesDimsList.ToList();
+
+
+        TtkList = (await TtkService.GetAllAsync()).ToList();
+        FullTtkList = new List<Ttk>(TtkList);
+
+        StateHasChanged();
+        showWait = false;
+    }
+
+    private void AddNewTtkItem()
+    {
+        TooltipService.Close();
+        NavigationManager.NavigateTo($"/AddNewTTKItem?itemFromSessionStorage={false}", false);
+    }
+
+    private async Task AddNewCategory()
+    {
+
+        TooltipService.Close();
+        var DialogResult = await DialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
+                 new Dictionary<string, object>()
+                                   {
+                    {"CategoriesDims", CategoriesDimsList},
+                    {"VolumesDims", VolumesDimsList }
+                                   },
+              new DialogOptions() { Style = "width: 80%; height: auto;", Resizable = false, Draggable = true, ShowClose = false, ShowTitle=false });
+        
+        StateHasChanged();
+    }
+
+    private async Task AddNewVolume()
+    {
+        TooltipService.Close();
+        var DialogResult = await DialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
+                 new Dictionary<string, object>()
+                                       {
+                    {"CategoriesDims", CategoriesDimsList},
+                    {"VolumesDims", VolumesDimsList}
+                                       },
+              new DialogOptions() { Style = "width: 80%; height: auto;", Resizable = false, Draggable = true, ShowClose = false, ShowTitle = false });
+
+        StateHasChanged();
+    }
+
+    private async Task EditRow(Ttk itemForUpdate)
+    {
+        TooltipService.Close();
+        await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, itemForUpdate);
+        NavigationManager.NavigateTo($"/AddNewTTKItem?itemForUpdate={true}&itemFromSessionStorage={true}", false);
+    }
+
+    private async Task DeleteRow(Ttk itemForUpdate)
+    {
+        if (showWarringMessage)
+        {
+            var DialogResult = await DialogService.OpenAsync<DeleteObjectQuestion>($"Удалить {itemForUpdate.Name} {itemForUpdate.Volume?.Volume ?? ""}?",
+                new Dictionary<string, object>()
+                {
+                    {"showWarringMessage",  showWarringMessage},
+                },
+                new DialogOptions() { Style = "width: 300px;", Resizable = false, Draggable = true, ShowClose = false});
+
+
+            if (DialogResult == true)
+            {
+                TtkList.Remove(itemForUpdate);
+                await TtkDG.Reload();
+                var res = await TtkService.DeleteAsync(itemForUpdate.Id);
+            }
+        }
+        else
+        {
+            TtkList.Remove(itemForUpdate);
+            await TtkDG.Reload();
+            var res = await TtkService.DeleteAsync(itemForUpdate.Id);
+        }
+
+
+
+        StateHasChanged();
+    }
+
+    private async Task CopyRow(Ttk itemForUpdate)
+    {
+        TooltipService.Close();
+        await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, itemForUpdate);
+        NavigationManager.NavigateTo($"/AddNewTTKItem?itemForUpdate={false}&itemFromSessionStorage={true}", false);
+    }
+
+
+    private void OnChangeCategory(object ViewCategory)
+    {
+        if (ViewCategory is not null)
+        {
+            if (ViewCategory is IEnumerable<CategoriesDim> values)
+            {
+                ChoseCategoryDim = values.ToList(); // Обновляем выбранные категории
+                ApplyFilters(); // Применяем фильтры
+            }
+        }
+        else
+        {
+            ChoseCategoryDim = new List<CategoriesDim>();
+            ApplyFilters();
+        }
+    }
+    private void OnChangeVolumes(object ViewVolumes)
+    {
+        if (ViewVolumes is not null)
+        {
+            if (ViewVolumes is IEnumerable<VolumesDim> values)
+            {
+                ChoseVolumesDim = values.ToList();
+                ApplyFilters();
+            }
+        }
+        else
+        {
+            ChoseVolumesDim = new List<VolumesDim>();
+            ApplyFilters(); 
+        }
+    }
+    private void ApplyFilters()
+    {
+        TtkList = FullTtkList!.Where(x =>
+            (ChoseCategoryDim!.Count() == 0 || (ChoseCategoryDim!.Select(c => c.Id)).ToList().Contains(x.CategoryId!.Value)) &&
+            (ChoseVolumesDim!.Count() == 0 || (ChoseVolumesDim!.Select(v => v.Id)).ToList().Contains(x.VolumeId!.Value))
+        ).ToList();
+    }
+
+
+
+    private void OnChangeContainerForInsertItem(ContainersDim changedContainer)
+    {
+        if (itemToInsert is not null)
+        {
+            itemToInsert.ContainerId = changedContainer.Id;
+        }
+    }
+
+    private void OnMouseDeleteEnter(ElementReference args, string name)
+    {
+        TooltipService.Open(args, $"Удалить {name}",
+            new TooltipOptions()
+                {
+                    Position = TooltipPosition.Left,
+                    Delay = 500,
+                    Duration = 5000,
+                    Style = "background: var(--rz-base-300); color: var(--rz-text-color)"
+                });
+        //buttonForDeleteStyle = ButtonStyle.Danger;
+        var x = args.Context; 
+        
+    }
+
+    private void OnMouseDeleteEnter(ElementReference args)
+    {
+        TooltipService.Close();
+        //buttonForDeleteStyle = ButtonStyle.Dark;
+    }
+
+}

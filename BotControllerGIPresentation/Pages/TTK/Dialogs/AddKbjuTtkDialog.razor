@@ -1,0 +1,154 @@
+﻿@if (showWait)
+{
+    <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <RadzenStack >
+        <RadzenTemplateForm Data="@NewKbjuTtkItem" Submit="@(async(KbjuTtk args) => {Submit(args); })" InvalidSubmit=@OnInvalidSubmit>
+            <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                @* поля для заполенения *@
+                <RadzenStack Style="width:100%" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Orientation="Orientation.Vertical">
+                    <RadzenRow>
+                        <RadzenColumn Style="width: 50%" >
+                            <RadzenFormField Style="width: 435px;" Text="Название" Variant="Variant.Outlined">
+                                <RadzenTextBox @bind-Value=@NewKbjuTtkItem.Name Style="width: 100%;" />
+                            </RadzenFormField>
+                        </RadzenColumn>
+                        <RadzenColumn Style="width: 50%">
+                            <RadzenFormField Style="width: 435px" Text="Вариант приготовления" Variant="Variant.Outlined">
+                                <RadzenTextBox @bind-Value=@NewKbjuTtkItem.Variety Style="width: 100%;" />
+                            </RadzenFormField>
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                    <RadzenFormField Text="Содержание на 100 гр">
+                        <RadzenFormField Style="margin: 10px;" Text="Белки" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Proteins100 />
+                            </ChildContent>
+                        </RadzenFormField>
+
+                        <RadzenFormField Style="margin: 10px;" Text="Жиры" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Fats100 />
+                            </ChildContent>
+                        </RadzenFormField>
+
+                        <RadzenFormField Style="margin: 10px;" Text="Углеводы" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Carbohydrates100 />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="Калорийность" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Calories100 />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="Кофеин" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 мл" @bind-Value=@NewKbjuTtkItem.Caffeine100 />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="кДж" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 мл" @bind-Value=@NewKbjuTtkItem.Energy100/>
+                            </ChildContent>
+                        </RadzenFormField>
+
+                    </RadzenFormField>
+
+
+                    <RadzenFormField Text="Содержание в 1 порции">
+                        <RadzenFormField Style="margin: 10px;" Text="Белки" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Proteins />
+                            </ChildContent>
+                        </RadzenFormField>
+
+                        <RadzenFormField Style="margin: 10px;" Text="Жиры" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Fats />
+                            </ChildContent>
+                        </RadzenFormField>
+
+                        <RadzenFormField Style="margin: 10px;" Text="Углеводы" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Carbohydrates />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="Калорийность" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 г" @bind-Value=@NewKbjuTtkItem.Calories />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="Кофеин" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 мл" @bind-Value=@NewKbjuTtkItem.Caffeine />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Style="margin: 10px;" Text="кДж" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenNumeric TValue="float?" Step="0.01" Format="0.00 мл" @bind-Value=@NewKbjuTtkItem.Energy />
+                            </ChildContent>
+                        </RadzenFormField>
+                    </RadzenFormField>
+
+
+                </RadzenStack>
+                @* кнопки  ок/отмена*@
+                <RadzenStack Gap="1rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                    Style="width: 100%; min-width: 200px; max-width: 425px;"></RadzenButton>
+                </RadzenStack>
+            </RadzenStack>
+
+        </RadzenTemplateForm>
+    </RadzenStack>
+}
+
+
+
+@code 
+{
+    private bool showWait = true;
+    
+    [Parameter]
+    public KbjuTtk NewKbjuTtkItem { get; set; } = new();
+
+    [Parameter]
+    public string? KbjuTtkItemName { get; set; }
+    [Parameter]
+    public int? VolumeId { get; set; }
+    [Parameter]
+    public int? TtkItemId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(KbjuTtkItemName))
+        {
+            NewKbjuTtkItem.Name = KbjuTtkItemName;
+        }
+        if(VolumeId is not null)
+        {
+            NewKbjuTtkItem.VolumeId = VolumeId;
+        }
+        if (TtkItemId is not null)
+        {
+            NewKbjuTtkItem.TtkId = TtkItemId;
+        }
+
+        showWait = false;
+    }
+    private void Submit(KbjuTtk newItem)
+    {
+        DialogService.Close(newItem);
+    }
+
+
+    private void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+}

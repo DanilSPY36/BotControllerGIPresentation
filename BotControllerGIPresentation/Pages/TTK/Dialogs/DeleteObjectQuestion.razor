@@ -1,0 +1,19 @@
+﻿
+<RadzenStack Style="width: 100px;" Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenButton Text="Да" Click="() => Close(true)" Style="width: 80px;" />
+        <RadzenButton Text="Нет" Click="() => Close(false)" ButtonStyle="ButtonStyle.Light" />
+    </RadzenStack>
+</RadzenStack>
+
+@code 
+{
+    [Parameter]
+    public bool showWarringMessage { get; set; } 
+
+    private void Close(bool result)
+    {
+        DialogService.Close(result);
+    }
+
+}

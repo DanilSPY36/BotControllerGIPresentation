@@ -1,0 +1,701 @@
+﻿@page "/AddNewTTKItem"
+
+@inject ISessionStorageGenericService<Ttk> SessionStorageService;
+
+
+@if (showWait)
+{
+    <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <RadzenNotification/>
+    <RadzenDialog />
+    <RadzenTooltip />
+    <RadzenTemplateForm Data="@newTtkItem" Submit="@(async(Ttk args) => {await Submit(args); })" InvalidSubmit=@OnInvalidSubmit>
+        <RadzenSplitter Orientation="Radzen.Orientation.Horizontal" Collapse=@OnTtkIremCardIsCollapse Expand=@OnTtkIremCardIsExpend>
+
+            <RadzenSplitterPane Size="25%" Min="30px" Max="70%">
+                <RadzenStack>
+                    <RadzenCard Style="min-height:80vh; max-height: 88vh;" class="rz-overflow-scroll">
+                        <RadzenStack Orientation="Radzen.Orientation.Vertical">
+                            <RadzenFormField Text="Название напитка или еды" Style="width: 100%; min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenTextBox Name="Name" @bind-Value=@newTtkItem.Name @oninput="@(args => newTtkItem.Name = $"{args.Value}")" />
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                                <RadzenFormField Text="Категория" Style="width: 100%;min-width: 350px; padding-bottom: 6px;">
+                                    <ChildContent>
+                                        <RadzenDropDown @bind-Value=@newTtkItem.CategoryId Data=@CategoriesList
+                                        TextProperty="@nameof(CategoriesDim.Category)"
+                                        ValueProperty="@nameof(CategoriesDim.Id)"
+                                        Style="width: 100%; min-width: 350px;" Name="DropDownCategoriesList" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                                <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                                Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
+                                Click="@AddNewCategory"
+                                MouseEnter="@(args => TooltipService.Open(args, "Добавить категорию",
+                              new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                MouseLeave="@(args => TooltipService.Close())" />
+                            </RadzenStack>
+
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                                <RadzenFormField Text="Объем" Style="width: 100%;  min-width: 350px; padding-bottom: 6px;">
+                                    <ChildContent>
+                                        <RadzenDropDown @bind-Value=@newTtkItem.VolumeId Change="@(args => NewTTKItemVolumeChange(args))" Data=@VolumesList @onchange="@(args => newTtkItem.Volume!.Volume = args.Value?.ToString())"
+                                        TextProperty="@nameof(VolumesDim.Volume)"
+                                        ValueProperty="@nameof(VolumesDim.Id)"
+                                        Style="width: 100%; min-width: 350px;" Name="DropDownVolumesList" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                                <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                                Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
+                                Click="@AddNewVolume"
+                                MouseEnter="@(args => TooltipService.Open(args, "Добавить объем",
+                              new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                MouseLeave="@(args => TooltipService.Close())" />
+                            </RadzenStack>
+
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                                <RadzenFormField Text="Посуда для подачи" Style="width: 100%;min-width: 350px; padding-bottom: 6px;">
+                                    <ChildContent>
+                                        <RadzenDropDown @bind-Value=@newTtkItem.ContainerId Data=@ContainersList
+                                        TextProperty="@nameof(ContainersDim.Container)"
+                                        ValueProperty="@nameof(ContainersDim.Id)"
+                                        Style="width: 100%;  min-width: 350px;" Name="DropDownContainersList" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                                <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                                Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
+                                Click="@AddNewContainer"
+                                MouseEnter="@(args => TooltipService.Open(args, "Добавить посуду",
+                              new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                MouseLeave="@(args => TooltipService.Close())" />
+                            </RadzenStack>
+
+                            <RadzenFormField Text="Ингридиенты" Style="width: 100%; min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenTextArea @bind-Value=@newTtkItem.Ingridients Rows="6" Name="Ingridients" @oninput="@(args => newTtkItem.Ingridients = $"{args.Value}")" />
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenFormField Text="Инструкция приготовления" Style="width: 100%;min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenTextArea @bind-Value=@newTtkItem.HowToCook Rows="6" Name="HowToCook" @oninput="@(args => newTtkItem.HowToCook = $"{args.Value}")" />
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenFormField Text="Описание" Style="width: 100%;  min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenTextArea Name="Description" @bind-Value=@newTtkItem.Description Rows="6" Style="height: 152px" @oninput="@(args => newTtkItem.Description = $"{args.Value}")" />
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenFormField Text="Возможные добавки" Style="width: 100%;min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenTextArea @bind-Value=@newTtkItem.Additives Rows="6" @oninput="@(args => newTtkItem.Additives = $"{args.Value}")" />
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenFormField Text="Вес 1 порции" Style="width: 100%;  min-width: 350px; padding-bottom: 6px;">
+                                <ChildContent>
+                                    <RadzenNumeric Name="WeightinDouble" @bind-Value=@WeightinDouble></RadzenNumeric>
+                                </ChildContent>
+                            </RadzenFormField>
+
+                            <RadzenUpload id="ddUpload" @ref="UploadImage" ChooseText="Фото напитка или еды" Auto="false" Multiple="false" Accept="image/bmp,image/jpeg,image/jpg,image/png"
+                            Change="OnClientFileUploadChange" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+                        </RadzenStack>
+                    </RadzenCard>
+                </RadzenStack>
+            </RadzenSplitterPane>
+
+            <RadzenSplitterPane Size="50%" Min="30px" Max="70%">
+                <RadzenStack>
+                    <RadzenCard Style="min-height:80vh; max-height: 88vh; " class="rz-overflow-hidden">
+                        <RadzenTabs Style="font-size: 5px;" TabPosition=TabPosition.Top RenderMode="TabRenderMode.Server">
+                            <Tabs>
+                                <RadzenTabsItem Text="в порции" class="font-size: 5px;" Style="max-width:10rem">
+                                    <RadzenStack Orientation="Orientation.Vertical">
+                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
+                                            <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                                            Click="@AddKbju" MouseEnter="@(args => TooltipService.Open(args, $"Добавить",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" />
+                                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => EditRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
+                                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => DeleteKbjuRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
+                                            MouseEnter="@(args => TooltipService.Open(args, $"Удалить",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            @if (TtkIremCardIsCollapse)
+                                            {
+                                                <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
+                                                Style="width: 100%; min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Сохранить"
+                                                MouseEnter="@(args => TooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                                MouseLeave="@(args => TooltipService.Close())"/>
+                                            }
+                                        </RadzenStack>
+
+                                        <RadzenDataGrid Density="Density.Compact" TItem="KbjuTtk"
+                                        Data=@newTtkItem.KbjuTtks @ref="KbjuTtkDG" SelectionMode="DataGridSelectionMode.Single" @bind-Value="@SelectedkbjuTtk"
+                                        PageSize="20" AllowColumnResize="true" AllowPaging="true"
+                                        Style="height: calc(100vh - 275px); --rz-grid-header-font-weight: bold;  width: contain;"
+                                        ColumnWidth="140px">
+                                            <EmptyTemplate>
+                                                <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">КБЖУ отсутсвутвует</p>
+                                            </EmptyTemplate>
+                                            <Columns>
+                                                <RadzenDataGridColumn Frozen="true" FrozenPosition="FrozenColumnPosition.Left" TItem="KbjuTtk" MinWidth="100px;" Width="120px;" Property="Variety" Title="Основа объекта" />
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Proteins" Title="Белки">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Proteins)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Fats" Title="Жиры">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Fats)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Carbohydrates" Title="Углеводы">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Carbohydrates)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Calories" Title="Каллории">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Calories)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Energy" Title="Ккал">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Energy)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="80px" MinWidth="70px;" Property="Caffeine" Title="Кофеин">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Caffeine)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                            </Columns>
+                                        </RadzenDataGrid>
+                                    </RadzenStack>
+                                </RadzenTabsItem>
+                                <RadzenTabsItem Text="на 100гр" Style="max-width:10rem">
+                                    <RadzenStack Orientation="Orientation.Vertical">
+                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
+                                            <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
+                                            Click="@AddKbju" MouseEnter="@(args => TooltipService.Open(args, $"Добавить",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" />
+                                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => EditRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
+                                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => DeleteKbjuRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
+                                            MouseEnter="@(args => TooltipService.Open(args, $"Удалить",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            @if (TtkIremCardIsCollapse)
+                                            {
+                                                <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
+                                                Style="width: 100%; min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Сохранить"
+                                                MouseEnter="@(args => TooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
+                                                        new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
+                                                MouseLeave="@(args => TooltipService.Close())" />
+                                            }
+                                        </RadzenStack>
+
+                                        <RadzenDataGrid Density="Density.Compact" TItem="KbjuTtk"
+                                        Data=@newTtkItem.KbjuTtks @ref="KbjuTtkDG" SelectionMode="DataGridSelectionMode.Single" @bind-Value="@SelectedkbjuTtk"
+                                        PageSize="20" AllowColumnResize="true" AllowPaging="true"
+                                        Style="height: calc(100vh - 275px); --rz-grid-header-font-weight: bold;  width: contain;"
+                                        ColumnWidth="140px">
+                                            <EmptyTemplate>
+                                                <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">КБЖУ отсутсвутвует</p>
+                                            </EmptyTemplate>
+                                            <Columns>
+                                                <RadzenDataGridColumn Frozen="true" FrozenPosition="FrozenColumnPosition.Left" TItem="KbjuTtk" MinWidth="100px;" Width="120px;" Property="Variety" Title="Основа объекта" />
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Proteins100" Title="Белки">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Proteins100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Fats100" Title="Жиры">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Fats100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Carbohydrates100" Title="Углеводы">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Carbohydrates100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Calories100" Title="Каллории">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Calories100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Energy100" Title="ккал">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Energy100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                                <RadzenDataGridColumn TItem="KbjuTtk" Width="60px" MinWidth="50px;" Property="Caffeine100" Title="Кофеин">
+                                                    <Template Context="item">
+                                                        @String.Format("{0:0.00}г.", item.Caffeine100)
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+
+                                            </Columns>
+                                        </RadzenDataGrid>
+
+                                    </RadzenStack>
+                                </RadzenTabsItem>
+                            </Tabs>
+
+
+
+                        </RadzenTabs>
+                    </RadzenCard>
+                </RadzenStack>
+            </RadzenSplitterPane>
+
+            <RadzenSplitterPane Size="25%" Min="30px" Max="70%"  >
+                <RadzenStack>
+                    <RadzenCard Style="position: sticky; top: 2%; min-height:88vh; max-height: 88vh;" class="rz-overflow-hidden">
+                        <RadzenStack Orientation="Orientation.Vertical">
+                            <RadzenCard class="rz-mx-auto; rz-overflow-auto" Style="background-color: steelblue; min-height: 75vh; max-height:77vh; min-width: 425px;">
+                                <div style="text-align: center;">
+                                    @if(imageIsLoading)
+                                    {
+                                        <RadzenImage Path="Images/emptyItem.jpg" Style="max-width:390px; border-radius: 5px;"></RadzenImage>
+                                    }
+                                    else
+                                    {
+                                        <img src="@newTtkItem.PhotoPath" style="max-width:390px; border-radius: 5px;" />
+                                    }
+                                </div>
+                                <br />
+                                <RadzenStack Orientation="Orientation.Horizontal">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@(newTtkItem.Name ?? "Название напитка")"></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@(newTtkItem.Volume?.Volume ?? "объем")"></RadzenText>
+                                </RadzenStack>
+                                <br />
+                                <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@($"Ингридиенты:\n{newTtkItem.Ingridients}")"></RadzenText>
+                                <br />
+                                <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@($"Как готовить:\n{newTtkItem.HowToCook}")"></RadzenText>
+                                <br />
+                                <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@($"Описание:\n{newTtkItem.Description}")"></RadzenText>
+                                <br />
+                                <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@($"Добавки:\n{newTtkItem.Additives}")"></RadzenText>
+                                <br />
+                                <RadzenText TextStyle="TextStyle.Subtitle2" style="white-space:pre-wrap; color: var(--rz-text-contrast-color)" Text="@($"Вес одной порции: {WeightinDouble} гр.")"></RadzenText>
+                            </RadzenCard>
+                            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
+                            Style="width: 100%; min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Сохранить" />
+                        </RadzenStack>
+
+
+
+                    </RadzenCard>
+                </RadzenStack>
+            </RadzenSplitterPane>
+
+        </RadzenSplitter>
+        <RadzenRequiredValidator Component="Name" Text="" />
+        <RadzenRequiredValidator Component="DropDownCategoriesList" Text="" />
+        <RadzenRequiredValidator Component="DropDownContainersList" Text="" />
+        <RadzenRequiredValidator Component="Ingridients" Text="" />
+        <RadzenRequiredValidator Component="HowToCook" Text="" />
+        <RadzenRequiredValidator Component="WeightinDouble" Text="" />
+        <RadzenRequiredValidator Component="DropDownVolumesList" Text="" />
+    </RadzenTemplateForm>
+
+
+
+
+}
+
+
+@code
+{
+    [Parameter]
+    public IEnumerable<CategoriesDim>? CategoriesList { get; set; }
+    [Parameter]
+    public IEnumerable<ContainersDim>? ContainersList { get; set; }
+    [Parameter]
+    public IEnumerable<VolumesDim>? VolumesList { get; set; }
+    [Parameter]
+    public Ttk newTtkItem { get; set; } = new();
+
+
+    private RadzenDataGrid<KbjuTtk> KbjuTtkDG { get; set; } = new();
+    private IList<KbjuTtk>? SelectedkbjuTtk { get; set; }
+
+    private bool showWait = true;
+    private bool TtkIremCardIsCollapse = false;
+    private bool imageIsLoading = false;
+
+    private double? WeightinDouble { get; set; }
+
+    private RadzenUpload? UploadImage { get; set; }
+    private FileInfo? UploadFile { get; set; }
+    private string? ImagePath { get; set; } = "Images/emptyItem.jpg";
+    private string? ImagePathForDb { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool itemForUpdate { get; set; } = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool itemFromSessionStorage { get; set;} = false;
+
+    private string? oldPhotoPath { get; set; }
+    private bool PhotoChanged { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (itemFromSessionStorage)
+            {
+                newTtkItem = await SessionStorageService.GetItemFromSessionStorage(jsRuntime, newTtkItem);
+                oldPhotoPath = newTtkItem.PhotoPath;
+                var test = await UploadService.UploadPhotoFromServerToCLient(newTtkItem.PhotoPath!);
+                if (test is not null)
+                {
+                    newTtkItem.PhotoPath = $"data:image/png;base64,{Convert.ToBase64String(test)}";
+                }
+                else
+                {
+                    newTtkItem.PhotoPath = "Images/emptyItem.jpg";
+                }
+
+            }
+            else
+            {
+                newTtkItem.PhotoPath = "Images/emptyItem.jpg";
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ContainersList = await ContainerDimService.GetAllAsync();
+        CategoriesList = await CategoriesDimService.GetAllAsync();
+        VolumesList = await VolumesDimService.GetAllAsync();
+
+
+        if (newTtkItem.Weight is not null)
+        {
+            if (double.TryParse(newTtkItem.Weight, out var numberFromParse))
+            {
+                WeightinDouble = numberFromParse;
+            }
+
+        }
+        showWait = false;
+    }
+
+    private async Task Submit(Ttk newItem)
+    {
+        newItem.Weight = WeightinDouble.ToString();
+        newTtkItem.SpotId = 1;
+
+        newTtkItem.Volume = null;
+        newTtkItem.Container = null;
+        newTtkItem.Category = null;
+
+
+        if (await KNBJUCheck()) // проверка наличия КБЖУ у объекта 
+        {
+            // проверка на добавление объекта или изменения уже готвого объекта в бд
+            if (itemForUpdate)
+            {
+                await PostFileIntoUploadImages();
+                var resultItem = await TtkService.UpdateAsync(newItem);
+                if (resultItem is not null)
+                {
+                    NavigationManager.NavigateTo("/ttkTable", false);
+                }
+                else
+                {
+                    NotificationService.Notify(
+                                    new NotificationMessage
+                                        {
+                                            Severity = NotificationSeverity.Error,
+                                            Summary = $"Ошибка обновления объекта",
+                                            Detail = "объект не изменен",
+                                            Duration = 5000
+                                        });
+                }
+            }
+            else
+            {
+                newTtkItem.Id = 0;
+                await PostFileIntoUploadImages();
+                var resultItem = await TtkService.AddAsync(newTtkItem);
+                if (resultItem is not null)
+                {
+                    NavigationManager.NavigateTo("/ttkTable", false);
+                }
+                else
+                {
+                    NotificationService.Notify(
+                                    new NotificationMessage
+                                        {
+                                            Severity = NotificationSeverity.Error,
+                                            Summary = $"Ошибка создания",
+                                            Detail = "объект не добавлен в базу данных",
+                                            Duration = 5000
+                                        });
+                }
+            }
+
+
+        }
+        if (itemFromSessionStorage)
+        {
+            await SessionStorageService.DeleteItemFromSessionStorage(jsRuntime, newTtkItem);
+        }
+
+    }
+    private void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+
+
+    private async Task<bool> KNBJUCheck()
+    {
+        if (newTtkItem?.KbjuTtks?.Count == 0)
+        {
+            var dialogResult = await DialogService.OpenAsync($"У {newTtkItem.Name} отсутсвует КБЖУ",
+            ds =>@<RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Vertical">
+                    <RadzenText Text="Сохранить без КБЖУ?"></RadzenText>
+                        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal">
+                            <RadzenButton Text="Да" Click="() => ds.Close(true)" Style="width: 100px;" ButtonStyle="ButtonStyle.Warning" Variant="Variant.Outlined" />
+                            <RadzenButton Text="Нет" Click="() => ds.Close(false)" Style="width: 100px;" Variant="Variant.Outlined" />
+                        </RadzenStack>
+                   </RadzenStack>
+    );
+
+            return dialogResult;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private async Task PostFileIntoUploadImages()
+    {
+        if(PhotoChanged)
+        {
+            if(!string.IsNullOrEmpty(oldPhotoPath))
+            {
+                var test = await UploadService.DeleteOldPhoto(oldPhotoPath);
+            }
+        }
+        if (UploadFile is not null)
+        {
+            newTtkItem.PhotoPath = await UploadService.PhotoForTTkUpload(UploadFile);
+        }
+    }
+
+
+
+    private async Task OnClientFileUploadChange(UploadChangeEventArgs args)
+    {
+
+        if (args.Files.Count() > 0)
+        {
+            UploadFile = args.Files.First();
+
+            using (var stream = UploadFile.OpenReadStream(maxAllowedSize: 100 * 1024 * 1024))
+            {
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // Таймаут 30 секунд
+                try
+                {
+                    var buffer = await ReadStreamWithTimeout(stream, 4096, cts.Token);
+                    newTtkItem.PhotoPath = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+                }
+                catch (OperationCanceledException)
+                {
+                    // Обработка случая, когда операция была отменена
+                    Console.WriteLine("Чтение потока превысило время ожидания.");
+                }
+                catch (Exception ex)
+                {
+                    // Логирование других ошибок
+                    Console.WriteLine($"Ошибка загрузки файла: {ex.Message}");
+                }
+            }
+            PhotoChanged = true;
+        }
+        else
+        {
+            newTtkItem.PhotoPath = "Images/emptyItem.jpg";
+        }
+        StateHasChanged();
+        
+    }
+    private async Task<byte[]> ReadStreamWithTimeout(Stream stream, int bufferSize, CancellationToken cancellationToken)
+    {
+        var buffer = new byte[bufferSize];
+        using (var ms = new MemoryStream())
+        {
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+            {
+                ms.Write(buffer, 0, bytesRead);
+            }
+            return ms.ToArray();
+        }
+    }
+
+    private void NewTTKItemVolumeChange(object args)
+    {
+        newTtkItem.Volume = VolumesList?.Where(x => x.Id == (int)args).FirstOrDefault();
+    }
+
+    private async Task AddKbju()
+    {
+        if(newTtkItem is not null)
+        {
+            var DialogResult = await DialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
+                 new Dictionary<string, object>()
+                               {
+                    {"KbjuTtkItemName", $"{newTtkItem?.Name} {VolumesList?.Where(x => x.Id == newTtkItem!.VolumeId).First().Volume}"},
+                    {"VolumeId", newTtkItem!.VolumeId!},
+                    {"TtkItemId", newTtkItem!.Id}
+                               },
+              new DialogOptions() { Style = "width: auto; height: auto;", Resizable = false, Draggable = true, ShowClose = true });
+            if(DialogResult is not null)
+            {
+                newTtkItem?.KbjuTtks?.Add(DialogResult);
+                await KbjuTtkDG!.Reload();
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task EditRow(KbjuTtk itemForUpdate)
+    {
+        if (itemForUpdate.Id != 0)
+        {
+            if (newTtkItem is not null)
+            {
+                var DialogResult = await DialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
+                     new Dictionary<string, object>()
+                                       {
+                    {"KbjuTtkItemName", $"{newTtkItem?.Name} {VolumesList?.Where(x => x.Id == newTtkItem!.VolumeId).First().Volume}"},
+                    {"VolumeId", newTtkItem!.VolumeId!},
+                    {"TtkItemId", newTtkItem!.Id},
+                    {"NewKbjuTtkItem", itemForUpdate }
+                                       },
+                  new DialogOptions() { Style = "width: auto; height: auto;", Resizable = false, Draggable = true, ShowClose = true });
+                if (DialogResult is not null)
+                {
+                    await KbjuTtkDG!.Reload();
+                }
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteKbjuRow(KbjuTtk itemForRemove)
+    {
+        if (itemForRemove.Id != 0)
+        {
+            var result = await KbjuTtkService.DeleteAsync(itemForRemove.Id);
+            if(result)
+            {
+                newTtkItem?.KbjuTtks?.Remove(itemForRemove);
+                await KbjuTtkDG!.Reload();
+            }
+        }
+    }
+
+
+    private async Task AddNewCategory()
+    {
+
+        TooltipService.Close();
+        var DialogResult = await DialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
+                 new Dictionary<string, object>()
+                                       {
+                    {"CategoriesDims", CategoriesList!},
+                    {"VolumesDims", VolumesList!}
+                                       },
+              new DialogOptions() { Style = "width: 80%; height: auto;", Resizable = false, Draggable = true, ShowClose = false, ShowTitle = false });
+
+        StateHasChanged();
+    }
+    private async Task AddNewVolume()
+    {
+        TooltipService.Close();
+        var DialogResult = await DialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
+                 new Dictionary<string, object>()
+                                           {
+                    {"CategoriesDims", CategoriesList!},
+                    {"VolumesDims", VolumesList!}
+                                           },
+              new DialogOptions() { Style = "width: 80%; height: auto;", Resizable = false, Draggable = true, ShowClose = false, ShowTitle = false });
+
+        StateHasChanged();
+    }
+
+    private async Task AddNewContainer()
+    {
+        TooltipService.Close();
+        var DialogResult = await DialogService.OpenAsync<AddNewTtkContainerDialog>($"Посуда для подачи",
+                 new Dictionary<string, object>()
+                                               {
+                    {"ContainersDims", ContainersList!},
+                    {"CategoriesDims", CategoriesList!},
+                    {"VolumesDims", VolumesList!}
+                                               },
+              new DialogOptions() { Style = "width: 80%; height: auto;", Resizable = false, Draggable = true, ShowClose = false, ShowTitle = false });
+
+        StateHasChanged();
+    }
+
+    private void OnTtkIremCardIsCollapse(RadzenSplitterEventArgs args)
+    {
+        // itemCardPanel idex
+        if(args.PaneIndex == 2)
+        {
+            TtkIremCardIsCollapse = true;
+        }
+    }
+    private void OnTtkIremCardIsExpend(RadzenSplitterEventArgs args)
+    {
+        // itemCardPanel idex
+        if (args.PaneIndex == 2)
+        {
+            TtkIremCardIsCollapse = false;
+        }
+    }
+}

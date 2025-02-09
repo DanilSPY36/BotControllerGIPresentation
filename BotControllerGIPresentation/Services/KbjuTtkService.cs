@@ -8,10 +8,9 @@ namespace BotControllerGIPresentation.Services
 {
     public class KbjuTtkService : GenericService<KbjuTtk>, IKbjuTtkService
     {
-        private readonly HttpClient _httpClient;
         public KbjuTtkService(HttpClient httpClient) : base(httpClient)
         {
-            _httpClient = httpClient;
+            
         }
 
         public async Task<IEnumerable<KbjuTtk>> GetKbjuTtkByTtkId(int TtkItemId)

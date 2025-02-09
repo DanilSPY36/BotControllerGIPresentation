@@ -68,9 +68,9 @@
     private string repitPasswordValue { get; set; } = string.Empty;
     private bool repitPasswordVisable { get; set; } = true;
 
-    protected override async Task OnInitializedAsync()
-    {
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    // }
 
     private void TogglePassword()
     {
@@ -81,7 +81,7 @@
         repitPasswordVisable = !repitPasswordVisable;
     }
 
-    private async Task GoToLoginPage()
+    private void GoToLoginPage()
     {
         NavigationManager.NavigateTo("/login", false);
     }

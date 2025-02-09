@@ -25,7 +25,7 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             return Ok(items);
         }
         [HttpGet("GetTEST")]
-        public async Task<ActionResult<IEnumerable<User>>> GetTEST()
+        public ActionResult<IEnumerable<User>> GetTEST()
         {
             if (HttpContext.Request.Cookies.TryGetValue("test", out var cookieValue))
             {

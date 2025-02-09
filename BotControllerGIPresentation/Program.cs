@@ -77,7 +77,7 @@ builder.Services.AddHttpClient<IGenericService<KbjuTtk>, GenericService<KbjuTtk>
 
 
 #region Storages Uploads services
-
+builder.Services.AddScoped(typeof(ISessionStorageGenericService<>), typeof(SessionStorageGenericService<>));
 builder.Services.AddHttpClient<IUploadService, UploadService>(client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);

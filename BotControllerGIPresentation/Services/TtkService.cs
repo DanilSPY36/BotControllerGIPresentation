@@ -8,10 +8,9 @@ namespace BotControllerGIPresentation.Services
 {
     public class TtkService : GenericService<Ttk>, ITtkService
     {
-        private readonly HttpClient _httpClient;
         public TtkService(HttpClient httpClient) : base(httpClient)
         {
-            _httpClient = httpClient;
+            
         }
 
         public async Task<IEnumerable<Ttk>> GetTtkItemsByCategoryId(int categoryId)

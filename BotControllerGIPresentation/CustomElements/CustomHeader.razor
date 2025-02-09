@@ -1,0 +1,25 @@
+﻿<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween"
+             class="w-1000 rz-background-color-base-200 rz-mb-5 rz-border-radius-2" Style="position:sticky; top:-17px; z-index:9; height: 50px;" AlignItems="AlignItems.Center">
+    @*Левая сторона*@
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
+        @Left_Side
+    </RadzenStack>
+    @*Середина*@
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="20px">
+        @Center_Side
+    </RadzenStack>
+    @*Правая сторона*@
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+        @Right_Side
+    </RadzenStack>
+</RadzenStack>
+
+
+@code {
+    [Parameter]
+    public RenderFragment? Left_Side { get; set; }
+    [Parameter]
+    public RenderFragment? Center_Side { get; set; }
+    [Parameter]
+    public RenderFragment? Right_Side { get; set; }
+}
