@@ -57,6 +57,19 @@ namespace BotControllerGIPresentation.Services.UserServices
                 return string.Empty;
             }
         }
+        public async Task<bool> Logout() 
+        {
+            var response = await _httpClient.GetAsync($"api/User/Logout");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public async Task<string> Register(UserRegisterDto userRegisterDto)
         {
             var response = await _httpClient.PostAsJsonAsync($"api/User/Register", userRegisterDto);

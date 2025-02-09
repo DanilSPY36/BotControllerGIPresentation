@@ -9,8 +9,8 @@ namespace BotControllerGIPresentation.IServices.IUserServices
     { 
         Task<User> GetByEmail(string email);
         Task<User> GetByPhoneNumber(string phoneNumber);
-
         Task<string> Login(UserLoginDto userLoginDto);
         Task<string> Register(UserRegisterDto userRegisterDto);
+        Task<bool> Logout();
     }
 }

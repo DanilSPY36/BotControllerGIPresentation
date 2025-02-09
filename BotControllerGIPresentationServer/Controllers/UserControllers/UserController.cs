@@ -75,6 +75,14 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
 
         }
 
+        [HttpGet("Logout")]
+        public ActionResult<bool> Logout()
+        {
+            HttpContext.Response.Cookies.Delete("test");
+            return Ok(true);
+        }
+
+
         [HttpPost("Add")]
         public async Task<ActionResult<User>> Add(User item)
         {

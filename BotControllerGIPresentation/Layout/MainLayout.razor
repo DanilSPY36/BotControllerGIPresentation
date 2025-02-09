@@ -11,30 +11,30 @@
             <AuthorizeView>
                 <Authorized>
                     <RadzenSidebarToggle Style="color:black" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-                    
-                    <RadzenProfileMenu>
+                    <RadzenProfileMenu Style="background-color: aliceblue; color: black;">
                         <Template>
-                            <RadzenGravatar Email="user@example.com">
-                            </RadzenGravatar>
+                            <RadzenImage Path="images/notFoundUser.png" Style="width: 32px;height: 32px;" class="rz-border-radius-10" />
                         </Template>
                         <ChildContent>
-                            <RadzenProfileMenuItem Text="Профиль" Path="/MyProfil" Icon="account_circle"></RadzenProfileMenuItem>
-                            <RadzenProfileMenuItem Text="Личные данные" Path="menu" Icon="person_check"></RadzenProfileMenuItem>
-                            <RadzenProfileMenuItem Text="Настройки" Path="/ProfilSettings" Icon="settings"></RadzenProfileMenuItem>
-                            <RadzenProfileMenuItem Text="Выход" Path="/Exit" Icon="logout"></RadzenProfileMenuItem>
+                            <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Center" Style="width: 100%; height: 100%;">
+                                <RadzenButton Text="Профиль" Icon="account_circle" Click="@OnMyProfileClick" Variant="Variant.Text" ButtonStyle="ButtonStyle.Dark" Size="ButtonSize.ExtraSmall" Style="width: 100%; text-transform: none; border-radius: 0px;"></RadzenButton>
+                                <RadzenButton Text="Настройки" Icon="settings" Click="@OnSettingsClick" Variant="Variant.Text" ButtonStyle="ButtonStyle.Dark" Size="ButtonSize.ExtraSmall" Style="width: 100%; text-transform: none; border-radius: 0px;"></RadzenButton>
+                                <RadzenButton Text="Выход" Icon="logout" Click="@OnLogoutClick" Variant="Variant.Text" ButtonStyle="ButtonStyle.Dark" Size="ButtonSize.ExtraSmall" Style="width: 100%; text-transform: none; border-radius: 0px;"></RadzenButton>
+                            </RadzenStack>
                         </ChildContent>
                     </RadzenProfileMenu>
                 </Authorized>
                 <NotAuthorized>
                     <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
-                    <RadzenProfileMenu>
+                    <RadzenProfileMenu Style="background-color: aliceblue; color: black;">
                         <Template>
-                            <RadzenGravatar Email="user@example.com">
-                            </RadzenGravatar>
+                            <RadzenImage Path="images/notFoundUser.png" Style="width: 32px;height: 32px;" class="rz-border-radius-10" />
                         </Template>
                         <ChildContent>
-                            <RadzenProfileMenuItem Text="Войти" Path="/login" Icon="account_circle"></RadzenProfileMenuItem>
-                            <RadzenProfileMenuItem Text="Зарегистрироваться" Path="/signup" Icon="person_add"></RadzenProfileMenuItem>
+                            <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Center" Style="width: 100%; height: 100%;">
+                                <RadzenButton Text="Войти" Icon="login" Click="@OnLogin" Variant="Variant.Text" ButtonStyle="ButtonStyle.Dark" Size="ButtonSize.ExtraSmall" Style="width: 100%; text-transform: none; border-radius: 0px;"></RadzenButton>
+                                <RadzenButton Text="Регистрация" Icon="person_add" Click="@OnRegister" Variant="Variant.Text" ButtonStyle="ButtonStyle.Dark" Size="ButtonSize.ExtraSmall" Style="width: 100%; text-transform: none; border-radius: 0px;"></RadzenButton>
+                            </RadzenStack>
                         </ChildContent>
                     </RadzenProfileMenu>
                 </NotAuthorized>
@@ -62,12 +62,41 @@
 
 
 @code {
+    private UserLoginDto? userLoginDto { get; set; }
     bool sidebar1Expanded = true;
 
 
 
     protected override async Task OnInitializedAsync()
     {
-       
+
+    }
+
+    private void OnLogin()
+    {
+        NavigationManager.NavigateTo("/login", false);
+    }
+    private void OnRegister()
+    {
+        NavigationManager.NavigateTo("/signup", false);
+    }
+
+    private void OnMyProfileClick()
+    {
+        NavigationManager.NavigateTo("/myProfile", false);
+
+    }
+
+    private void OnSettingsClick()
+    {
+        NavigationManager.NavigateTo("/settings", false);
+
+    }
+
+    private async Task OnLogoutClick()
+    {
+        var result = await UserService.Logout();
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/", false);
     }
 }

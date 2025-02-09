@@ -1,70 +1,73 @@
 ﻿@page "/signup"
 
-<RadzenTemplateForm Data="@RegisterUserDto" Submit="@((UserRegisterDto args) => { Submit(args); })" InvalidSubmit=@OnInvalidSubmit
-Style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Style="width: 800px;">
-        <RadzenCard>
-            <RadzenFieldset Text="Данные аккаунта">
-                <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="1rem">
-                    <RadzenFormField Text="Имя" Variant="Variant.Outlined">
-                        <Start>
-                            <RadzenIcon Icon="account_circle" />
-                        </Start>
-                        <ChildContent>
-                            <RadzenTextBox Name="Name" @bind-Value=@RegisterUserDto.UserName></RadzenTextBox>
-                        </ChildContent>
-                    </RadzenFormField>
-                    <RadzenFormField Text="Почта" Variant="Variant.Outlined">
-                        <Start>
-                            <RadzenIcon Icon="account_circle" />
-                        </Start>
-                        <ChildContent>
-                            <RadzenTextBox Name="Email" @bind-Value=@RegisterUserDto.Email></RadzenTextBox>
-                        </ChildContent>
-                    </RadzenFormField>
-                    <RadzenFormField  Text="Пароль" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenTextBox Name="Password" @bind-Value="@passwordValue" Visible="@(!passwordVisable)" />
-                            <RadzenPassword Name="RepitPassword" @bind-Value="@passwordValue" Visible="@passwordVisable" />
-                        </ChildContent>
-                        <End>
-                            <RadzenButton Icon="@(passwordVisable ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
-                        </End>
-                    </RadzenFormField>
-                    <RadzenFormField Text="Повторите пароль" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenTextBox Name="Password" @bind-Value="@passwordValue" Visible="@(!passwordVisable)" />
-                            <RadzenPassword Name="RepitPassword" @bind-Value="@passwordValue" Visible="@passwordVisable" />
-                        </ChildContent>
-                        <End>
-                            <RadzenButton Icon="@(passwordVisable ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
-                        </End>
-                    </RadzenFormField>
-                </RadzenStack>
-            </RadzenFieldset>
-            <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="margin-top: 1rem">
-
-                <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark" Click="GoToLoginPage"
-                Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="У меня есть аккаунт" />
-
-                <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
-                Style="min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрироваться" />
-
+<RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height: 80vh; width: 100%">
+    <RadzenCard Style="width: 500px;">
+        <RadzenFieldset Text="Регистрация аккаунта">
+            <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="1rem">
+                <RadzenFormField Text="Имя" Variant="Variant.Outlined" Style="width:100%;">
+                    <End>
+                        <RadzenIcon Icon="account_circle" />
+                    </End>
+                    <ChildContent>
+                        <RadzenTextBox Name="Name" @bind-Value=@RegisterUserDto.UserName></RadzenTextBox>
+                    </ChildContent>
+                </RadzenFormField>
+                <RadzenFormField Text="Почта" Variant="Variant.Outlined" Style="width:100%;">
+                    <End>
+                        <RadzenIcon Icon="alternate_email" />
+                    </End>
+                    <ChildContent>
+                        <RadzenTextBox @bind-Value=@RegisterUserDto.Email></RadzenTextBox>
+                    </ChildContent>
+                </RadzenFormField>
+                <RadzenFormField Text="Пароль" Variant="Variant.Outlined" Style="width:100%;">
+                    <ChildContent>
+                        <RadzenTextBox Name="Password" @bind-Value="@passwordValue" Visible="@(!passwordVisable)" />
+                        <RadzenPassword Name="RepitPassword" @bind-Value="@passwordValue" Visible="@passwordVisable" />
+                    </ChildContent>
+                    <End>
+                        <RadzenButton Icon="@(passwordVisable ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                    </End>
+                </RadzenFormField>
+                <RadzenFormField Text="Повторите пароль" Variant="Variant.Outlined" Style="width:100%;">
+                    <ChildContent>
+                        <RadzenTextBox Name="Password" @bind-Value="@repitPasswordValue" Visible="@(!repitPasswordVisable)" />
+                        <RadzenPassword Name="RepitPassword" @bind-Value="@repitPasswordValue" Visible="@repitPasswordVisable" />
+                    </ChildContent>
+                    <End>
+                        <RadzenButton Icon="@(repitPasswordVisable ? "visibility" : "visibility_off")" Click="TogglePasswordRepit" Variant="Variant.Text" Size="ButtonSize.Small" />
+                    </End>
+                </RadzenFormField>
+                <RadzenButton IsBusy=@submitButtonIsBusy BusyText="Поиск пользователя" Click="@Submit" ButtonType="ButtonType.Submit" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Dark" Style="width: 200px;" Variant="Variant.Outlined" Icon="login" Text="Зарегистрироваться" />
+                <RadzenLink Icon="account_circle" Path="login" Text="у меня есть аккаунт" IconColor="@Colors.Info" Style="color: #076791; text-align:center; margin-top: -15px;" />
             </RadzenStack>
-        </RadzenCard>
+        </RadzenFieldset>
+    </RadzenCard>
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="width: 100%; margin-top: 40px;">
+        <RadzenAlert Visible="@alertVisible" AlertStyle="AlertStyle.Danger" Variant="Variant.Filled" Shade="Shade.Lighter" Style="position: fixed; width: 500px;">
+            Пользователь не найден!
+            Проверьте введенные данные.
+        </RadzenAlert>
     </RadzenStack>
-    <RadzenRequiredValidator Component="Name" Text="" />
-    <RadzenRequiredValidator Component="Email" Text="" />
-    <RadzenRequiredValidator Component="Password" Text="" />
-    <RadzenRequiredValidator Component="RepitPassword" Text="" />
-</RadzenTemplateForm>
+</RadzenStack>
+
+
 
 @code
 {
     private UserRegisterDto RegisterUserDto { get; set; } = new();
 
+
+    private bool submitButtonIsBusy { get; set; } = false;
+
+
     private string passwordValue { get; set; } = string.Empty;
     private bool passwordVisable { get; set; } = true;
+    private bool alertVisible { get; set; } = false;
+    private string AlertText { get; set; } = string.Empty;
+
+    private string repitPasswordValue { get; set; } = string.Empty;
+    private bool repitPasswordVisable { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,20 +77,25 @@ Style="display: flex; justify-content: center; align-items: center; height: 80vh
     {
         passwordVisable = !passwordVisable;
     }
+    private void TogglePasswordRepit()
+    {
+        repitPasswordVisable = !repitPasswordVisable;
+    }
 
     private async Task GoToLoginPage()
     {
         NavigationManager.NavigateTo("/login", false);
     }
 
-    private void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
-    {
-
-    }
-
     private async Task Submit(UserRegisterDto registerUser)
     {
         RegisterUserDto.Password = passwordValue;
         var token = await UserService.Register(registerUser);
+    }
+    private async Task Submit()
+    { 
+        if()
+        RegisterUserDto.Password = passwordValue;
+        var token = await UserService.Register(RegisterUserDto);
     }
 }
