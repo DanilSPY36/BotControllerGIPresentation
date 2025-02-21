@@ -1,4 +1,6 @@
 global using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using BotControllerGIPresentation;
 using BotControllerGIPresentation.GenericService;
 using BotControllerGIPresentation.IServices;
@@ -16,6 +18,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddRadzenComponents();
+
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddBlazoredSessionStorage(config => config.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();
@@ -78,6 +85,11 @@ builder.Services.AddHttpClient<IGenericService<KbjuTtk>, GenericService<KbjuTtk>
 
 #region Storages Uploads services
 builder.Services.AddScoped(typeof(ISessionStorageGenericService<>), typeof(SessionStorageGenericService<>));
+
+builder.Services.AddHttpClient<ISessionStorageGenericService<Ttk>, SessionStorageGenericService<Ttk>>(client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
 builder.Services.AddHttpClient<IUploadService, UploadService>(client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);

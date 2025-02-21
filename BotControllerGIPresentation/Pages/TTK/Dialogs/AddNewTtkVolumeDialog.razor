@@ -20,9 +20,9 @@ else
             Style="--rz-grid-header-font-weight: bold;  width: contain; min-width: 400px;">
                 <HeaderTemplate>
                     <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Icon="add" Click="@AddNewVolume" Disabled="@(EditMode)"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Добавить новый объем",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Добавить новый объем",
                               new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
 
                     <RadzenSwitch @bind-Value=@CascadingDelete Change=@(args => OnCascadingDeleteChange(args)) 
                     InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Switch value" }})"
@@ -31,9 +31,9 @@ else
                                  --rz-switch-unchecked-background-color: #ffcccc;
                                  --rz-switch-unchecked-circle-background-color: #ffffff;
                                  margin-left: 10px;"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Удаление объема вместе с тех. картами",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Удаление объема вместе с тех. картами",
                               new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-danger-light); color: var(--rz-text-contrast-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
                 </HeaderTemplate>
                 <EmptyTemplate>
                     <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">упс.. У вас нет категорий</p>
@@ -60,9 +60,9 @@ else
                     <RadzenDataGridColumn TItem="VolumesDim" TextAlign="TextAlign.Center" MinWidth="40px" Width="50px">
                         <Template Context="item">
                             <RadzenButton Visible="item.Id != 0" Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditVolume(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Volume}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Редактировать {item.Volume}",
                                     new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                             <RadzenButton Visible="item.Id != 0"
                             Icon="delete"
                             ButtonStyle="ButtonStyle.Danger"
@@ -74,14 +74,14 @@ else
                         </Template>
                         <EditTemplate Context="item">
                             <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => SaveChangesCategory(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Сохранить {item.Volume}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Сохранить {item.Volume}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
 
                             <RadzenButton Icon="cancel" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CancelEdit(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Оттменить изменения {item.Volume}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Оттменить изменения {item.Volume}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                         </EditTemplate>
                     </RadzenDataGridColumn>
 
@@ -132,6 +132,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await SessionStorageService.DeleteItemFromSessionStorage(jsRuntime, ItemToUpdate);
+        await SessionStorageService.DeleteItemFromSessionStorage(jsRuntime, ItemToInsert);
         await GetVolumesTtks();
         showWait = false;
     }
@@ -151,14 +153,14 @@ else
     private async Task OnCreateRow(VolumesDim updateVolume)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = updateVolume;
         await VolumeDG.EditRow(updateVolume);
     }
     private async Task OnUpdateRow(VolumesDim newVolume)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (ItemToUpdate is not null)
@@ -174,7 +176,7 @@ else
 
     private async Task AddNewVolume()
     {
-        TooltipService.Close();
+        tooltipService.Close();
         EditMode = true;
         ItemToInsert = new();
         await VolumeDG.InsertRow(ItemToInsert);
@@ -182,7 +184,7 @@ else
     private async Task EditVolume(VolumesDim VolumeforUpdate)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, VolumeforUpdate);
         DeepCopyUpdateitem = await SessionStorageService.CreateDeepCopy(jsRuntime, VolumeforUpdate);
         ItemToUpdate = VolumeforUpdate;
@@ -192,7 +194,7 @@ else
     private void CancelEdit(VolumesDim item)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (DeepCopyUpdateitem is not null)
@@ -211,7 +213,7 @@ else
     private async Task SaveChangesCategory(VolumesDim changedVolume)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         if (ItemToInsert is not null)
         {
             var result = await VolumesDimService.AddAsync(changedVolume);
@@ -237,14 +239,14 @@ else
 
     private async Task DeleteVolume(VolumesDim VolumeForDelete)
     {
-        TooltipService.Close();
+        tooltipService.Close();
 
         // проверка есть ли у категории объекты
         if (VolumeForDelete.Ttks.Count() != 0)
         {
             if (CascadingDelete)
             {
-                var dialogResult = await DialogService.OpenAsync("", ds =>
+                var dialogResult = await dialogService.OpenAsync("", ds =>
     @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
         <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить объем вместе с тех. картами?"></RadzenText>
         <RadzenText Text="При удалении объема также будут удалены технические карты и вся связанная информация."
@@ -266,7 +268,7 @@ else
             }
             else
             {
-                var dialogResult = await DialogService.OpenAsync("", ds =>
+                var dialogResult = await dialogService.OpenAsync("", ds =>
     @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
         <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить объем?"></RadzenText>
         <RadzenText Text="Объем будет удален. Тех. картам будет присвое базовый объем"
@@ -315,7 +317,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args, string volume)
     {
-        TooltipService.Open(args, $"Удалить {volume}",
+        tooltipService.Open(args, $"Удалить {volume}",
             new TooltipOptions()
                 {
                     Position = TooltipPosition.Left,
@@ -328,7 +330,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         //buttonForDeleteStyle = ButtonStyle.Dark;
     }
 
@@ -337,6 +339,6 @@ else
     }
     private void DialogOnClose()
     {
-        DialogService.Close(VolumesDims);
+        dialogService.Close(VolumesDims);
     }
 }

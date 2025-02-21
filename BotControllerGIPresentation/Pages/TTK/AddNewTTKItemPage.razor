@@ -2,6 +2,9 @@
 
 @inject ISessionStorageGenericService<Ttk> SessionStorageService;
 
+<RadzenNotification />
+<RadzenDialog />
+<RadzenTooltip />
 
 @if (showWait)
 {
@@ -10,9 +13,7 @@
 }
 else
 {
-    <RadzenNotification/>
-    <RadzenDialog />
-    <RadzenTooltip />
+    
     <RadzenTemplateForm Data="@newTtkItem" Submit="@(async(Ttk args) => {await Submit(args); })" InvalidSubmit=@OnInvalidSubmit>
         <RadzenSplitter Orientation="Radzen.Orientation.Horizontal" Collapse=@OnTtkIremCardIsCollapse Expand=@OnTtkIremCardIsExpend>
 
@@ -38,9 +39,9 @@ else
                                 <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
                                 Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
                                 Click="@AddNewCategory"
-                                MouseEnter="@(args => TooltipService.Open(args, "Добавить категорию",
+                                MouseEnter="@(args => tooltipService.Open(args, "Добавить категорию",
                               new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                MouseLeave="@(args => TooltipService.Close())" />
+                                MouseLeave="@(args => tooltipService.Close())" />
                             </RadzenStack>
 
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
@@ -55,9 +56,9 @@ else
                                 <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
                                 Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
                                 Click="@AddNewVolume"
-                                MouseEnter="@(args => TooltipService.Open(args, "Добавить объем",
+                                MouseEnter="@(args => tooltipService.Open(args, "Добавить объем",
                               new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                MouseLeave="@(args => TooltipService.Close())" />
+                                MouseLeave="@(args => tooltipService.Close())" />
                             </RadzenStack>
 
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
@@ -72,9 +73,9 @@ else
                                 <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
                                 Style="margin-left: -7px; margin-top: 2px; height: 41px; width: 41px;"
                                 Click="@AddNewContainer"
-                                MouseEnter="@(args => TooltipService.Open(args, "Добавить посуду",
+                                MouseEnter="@(args => tooltipService.Open(args, "Добавить посуду",
                               new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                MouseLeave="@(args => TooltipService.Close())" />
+                                MouseLeave="@(args => tooltipService.Close())" />
                             </RadzenStack>
 
                             <RadzenFormField Text="Ингридиенты" Style="width: 100%; min-width: 350px; padding-bottom: 6px;">
@@ -123,24 +124,24 @@ else
                                     <RadzenStack Orientation="Orientation.Vertical">
                                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
                                             <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
-                                            Click="@AddKbju" MouseEnter="@(args => TooltipService.Open(args, $"Добавить",
+                                            Click="@AddKbju" MouseEnter="@(args => tooltipService.Open(args, $"Добавить",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" />
+                                            MouseLeave="@(args => tooltipService.Close())" />
                                             <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => EditRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
-                                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать",
+                                            MouseEnter="@(args => tooltipService.Open(args, $"Редактировать",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            MouseLeave="@(args => tooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
                                             <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => DeleteKbjuRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
-                                            MouseEnter="@(args => TooltipService.Open(args, $"Удалить",
+                                            MouseEnter="@(args => tooltipService.Open(args, $"Удалить",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            MouseLeave="@(args => tooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
                                             @if (TtkIremCardIsCollapse)
                                             {
                                                 <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
                                                 Style="width: 100%; min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Сохранить"
-                                                MouseEnter="@(args => TooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
+                                                MouseEnter="@(args => tooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
                                                         new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                                MouseLeave="@(args => TooltipService.Close())"/>
+                                                MouseLeave="@(args => tooltipService.Close())"/>
                                             }
                                         </RadzenStack>
 
@@ -198,24 +199,24 @@ else
                                     <RadzenStack Orientation="Orientation.Vertical">
                                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
                                             <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
-                                            Click="@AddKbju" MouseEnter="@(args => TooltipService.Open(args, $"Добавить",
+                                            Click="@AddKbju" MouseEnter="@(args => tooltipService.Open(args, $"Добавить",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" />
+                                            MouseLeave="@(args => tooltipService.Close())" />
                                             <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => EditRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
-                                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать",
+                                            MouseEnter="@(args => tooltipService.Open(args, $"Редактировать",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            MouseLeave="@(args => tooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
                                             <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="@(args => DeleteKbjuRow(SelectedkbjuTtk is not null ? SelectedkbjuTtk.First() : new KbjuTtk()))"
-                                            MouseEnter="@(args => TooltipService.Open(args, $"Удалить",
+                                            MouseEnter="@(args => tooltipService.Open(args, $"Удалить",
                                                         new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                            MouseLeave="@(args => TooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
+                                            MouseLeave="@(args => tooltipService.Close())" Disabled="@(SelectedkbjuTtk is null || SelectedkbjuTtk?.Count == 0)" />
                                             @if (TtkIremCardIsCollapse)
                                             {
                                                 <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Dark"
                                                 Style="width: 100%; min-width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Сохранить"
-                                                MouseEnter="@(args => TooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
+                                                MouseEnter="@(args => tooltipService.Open(args, $"Сохранеить {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}?",
                                                         new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                                                MouseLeave="@(args => TooltipService.Close())" />
+                                                MouseLeave="@(args => tooltipService.Close())" />
                                             }
                                         </RadzenStack>
 
@@ -389,22 +390,31 @@ else
                 }
                 else
                 {
-                    newTtkItem.PhotoPath = "Images/emptyItem.jpg";
+                    newTtkItem.PhotoPath = "images/emptyItem.jpg";
                 }
 
             }
             else
             {
-                newTtkItem.PhotoPath = "Images/emptyItem.jpg";
+                newTtkItem.PhotoPath = "images/emptyItem.jpg";
             }
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        ContainersList = await ContainerDimService.GetAllAsync();
-        CategoriesList = await CategoriesDimService.GetAllAsync();
-        VolumesList = await VolumesDimService.GetAllAsync();
+        try
+        {
+            ContainersList = await ContainerDimService.GetAllAsync();
+            CategoriesList = await CategoriesDimService.GetAllAsync();
+            VolumesList = await VolumesDimService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            var x = ex.Message;
+            throw;
+        }
+       
 
 
         if (newTtkItem.Weight is not null)
@@ -441,7 +451,7 @@ else
                 }
                 else
                 {
-                    NotificationService.Notify(
+                    notificationService.Notify(
                                     new NotificationMessage
                                         {
                                             Severity = NotificationSeverity.Error,
@@ -462,7 +472,7 @@ else
                 }
                 else
                 {
-                    NotificationService.Notify(
+                    notificationService.Notify(
                                     new NotificationMessage
                                         {
                                             Severity = NotificationSeverity.Error,
@@ -491,7 +501,7 @@ else
     {
         if (newTtkItem?.KbjuTtks?.Count == 0)
         {
-            var dialogResult = await DialogService.OpenAsync($"У {newTtkItem.Name} отсутсвует КБЖУ",
+            var dialogResult = await dialogService.OpenAsync($"У {newTtkItem.Name} отсутсвует КБЖУ",
             ds =>@<RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Vertical">
                     <RadzenText Text="Сохранить без КБЖУ?"></RadzenText>
                         <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal">
@@ -584,7 +594,7 @@ else
     {
         if(newTtkItem is not null)
         {
-            var DialogResult = await DialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
+            var DialogResult = await dialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
                  new Dictionary<string, object>()
                                {
                     {"KbjuTtkItemName", $"{newTtkItem?.Name} {VolumesList?.Where(x => x.Id == newTtkItem!.VolumeId).First().Volume}"},
@@ -607,7 +617,7 @@ else
         {
             if (newTtkItem is not null)
             {
-                var DialogResult = await DialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
+                var DialogResult = await dialogService.OpenAsync<AddKbjuTtkDialog>($"КБЖУ для {newTtkItem.Name} {VolumesList?.Where(x => x.Id == newTtkItem.VolumeId).First().Volume}",
                      new Dictionary<string, object>()
                                        {
                     {"KbjuTtkItemName", $"{newTtkItem?.Name} {VolumesList?.Where(x => x.Id == newTtkItem!.VolumeId).First().Volume}"},
@@ -642,8 +652,8 @@ else
     private async Task AddNewCategory()
     {
 
-        TooltipService.Close();
-        var DialogResult = await DialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
+        tooltipService.Close();
+        var DialogResult = await dialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
                  new Dictionary<string, object>()
                                        {
                     {"CategoriesDims", CategoriesList!},
@@ -655,8 +665,8 @@ else
     }
     private async Task AddNewVolume()
     {
-        TooltipService.Close();
-        var DialogResult = await DialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
+        tooltipService.Close();
+        var DialogResult = await dialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
                  new Dictionary<string, object>()
                                            {
                     {"CategoriesDims", CategoriesList!},
@@ -669,8 +679,8 @@ else
 
     private async Task AddNewContainer()
     {
-        TooltipService.Close();
-        var DialogResult = await DialogService.OpenAsync<AddNewTtkContainerDialog>($"Посуда для подачи",
+        tooltipService.Close();
+        var DialogResult = await dialogService.OpenAsync<AddNewTtkContainerDialog>($"Посуда для подачи",
                  new Dictionary<string, object>()
                                                {
                     {"ContainersDims", ContainersList!},

@@ -19,9 +19,9 @@ else
             <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
             Style="margin-left: 10px; margin: 5px;"
             Click="@AddNewTtkItem"
-            MouseEnter="@(args => TooltipService.Open(args, "Добавить тех. карту",
+            MouseEnter="@(args => tooltipService.Open(args, "Добавить тех. карту",
                           new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-            MouseLeave="@(args => TooltipService.Close())" />
+            MouseLeave="@(args => tooltipService.Close())" />
 
             <RadzenSelectBar @bind-Value=@CardsOrTableView TValue="bool" Style="margin-left: 10px; margin: 5px;">
                 <Items>
@@ -41,9 +41,9 @@ else
             <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
             Style="margin-left: -7px;"
             Click="@AddNewCategory"
-            MouseEnter="@(args => TooltipService.Open(args, "Добавить категорию",
+            MouseEnter="@(args => tooltipService.Open(args, "Добавить категорию",
                               new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-            MouseLeave="@(args => TooltipService.Close())" />
+            MouseLeave="@(args => tooltipService.Close())" />
 
 
 
@@ -57,16 +57,16 @@ else
             <RadzenButton Icon="docs_add_on" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"
             Style="margin-left: -7px;"
             Click="@AddNewVolume" 
-            MouseEnter="@(args => TooltipService.Open(args, "Добавить объем",
+            MouseEnter="@(args => tooltipService.Open(args, "Добавить объем",
                           new TooltipOptions(){ Position = TooltipPosition.Bottom, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-            MouseLeave="@(args => TooltipService.Close())" />
+            MouseLeave="@(args => tooltipService.Close())" />
 
         </Left_Side>
         <Right_Side>
             <RadzenSwitch @bind-Value=@showWarringMessage InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Switch value" }})" Style="max-width: 400px; margin-right: 10px;"
-            MouseEnter="@(args => TooltipService.Open(args, "Отключить предупреждение об удалении объекта?",
+            MouseEnter="@(args => tooltipService.Open(args, "Отключить предупреждение об удалении объекта?",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-            MouseLeave="@(args => TooltipService.Close())" />
+            MouseLeave="@(args => tooltipService.Close())" />
         </Right_Side>
     </CustomHeader>
     <RadzenDataGrid @ref="TtkDG" Data="@TtkList" TItem="Ttk"
@@ -102,13 +102,13 @@ else
             <RadzenDataGridColumn Title="" TItem="Ttk" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="156px">
                 <Template Context="item">
                     <RadzenButton Icon="content_copy" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CopyRow(item))"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Создание по шаблону {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Создание по шаблону {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
                     <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditRow(item))"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Редактировать {item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
                     <RadzenButton Icon="delete" ButtonStyle="@buttonForDeleteStyle" Variant="Variant.Text" Click="@(args => DeleteRow(item))"
                     Class="button-hover"
                     MouseEnter="@(args => OnMouseDeleteEnter(args, $"{item.Name} {VolumesDimsList.Where(x => x.Id == item.VolumeId).FirstOrDefault()?.Volume}"))"
@@ -197,15 +197,14 @@ else
 
     private void AddNewTtkItem()
     {
-        TooltipService.Close();
-        NavigationManager.NavigateTo($"/AddNewTTKItem?itemFromSessionStorage={false}", false);
+        NavigationManager.NavigateTo($"/AddNewTTKItem?itemForUpdate={false}&itemFromSessionStorage={false}", false);
     }
 
     private async Task AddNewCategory()
     {
 
-        TooltipService.Close();
-        var DialogResult = await DialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
+        tooltipService.Close();
+        var DialogResult = await dialogService.OpenAsync<AddNewTtkCategoryDialog>($"Категории",
                  new Dictionary<string, object>()
                                    {
                     {"CategoriesDims", CategoriesDimsList},
@@ -218,8 +217,8 @@ else
 
     private async Task AddNewVolume()
     {
-        TooltipService.Close();
-        var DialogResult = await DialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
+        tooltipService.Close();
+        var DialogResult = await dialogService.OpenAsync<AddNewTtkVolumeDialog>($"Объемы",
                  new Dictionary<string, object>()
                                        {
                     {"CategoriesDims", CategoriesDimsList},
@@ -232,7 +231,7 @@ else
 
     private async Task EditRow(Ttk itemForUpdate)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, itemForUpdate);
         NavigationManager.NavigateTo($"/AddNewTTKItem?itemForUpdate={true}&itemFromSessionStorage={true}", false);
     }
@@ -241,7 +240,7 @@ else
     {
         if (showWarringMessage)
         {
-            var DialogResult = await DialogService.OpenAsync<DeleteObjectQuestion>($"Удалить {itemForUpdate.Name} {itemForUpdate.Volume?.Volume ?? ""}?",
+            var DialogResult = await dialogService.OpenAsync<DeleteObjectQuestion>($"Удалить {itemForUpdate.Name} {itemForUpdate.Volume?.Volume ?? ""}?",
                 new Dictionary<string, object>()
                 {
                     {"showWarringMessage",  showWarringMessage},
@@ -270,7 +269,7 @@ else
 
     private async Task CopyRow(Ttk itemForUpdate)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, itemForUpdate);
         NavigationManager.NavigateTo($"/AddNewTTKItem?itemForUpdate={false}&itemFromSessionStorage={true}", false);
     }
@@ -328,7 +327,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args, string name)
     {
-        TooltipService.Open(args, $"Удалить {name}",
+        tooltipService.Open(args, $"Удалить {name}",
             new TooltipOptions()
                 {
                     Position = TooltipPosition.Left,
@@ -343,7 +342,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         //buttonForDeleteStyle = ButtonStyle.Dark;
     }
 

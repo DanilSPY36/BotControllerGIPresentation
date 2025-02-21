@@ -103,6 +103,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Description)
                 .HasColumnType("character varying")
                 .HasColumnName("description");
+            entity.HasMany(e => e.Ttks) 
+                .WithOne(e => e.Category) 
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CategoriesItemsDim>(entity =>
@@ -531,6 +534,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Volume)
                 .HasColumnType("character varying")
                 .HasColumnName("volume");
+
+            entity.HasMany(e => e.Ttks) // Замените на вашу навигационную коллекцию
+                .WithOne(e => e.Volume) // Замените на вашу навигационную сущность
+                .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.HasSequence("categories_dim_id_seq", "ttk_prod");
         modelBuilder.HasSequence("containers_dim_id_seq", "ttk_prod");

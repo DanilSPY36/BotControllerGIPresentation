@@ -15,6 +15,10 @@
 @using BotControllerGIPresentation.GenericService
 @using BotControllerGIPresentation.CustomElements
 @using BotControllerGIPresentation.Pages.TTK.Dialogs
+@using BotControllerGIPresentation.Pages.TTK
+@using System.Net.Http.Headers
+@using System.Text.Json
+
 
 @using Radzen
 @using Radzen.Blazor
@@ -38,8 +42,8 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthStateProvider 
 
-@inject NotificationMessage NotificationMessager
-@inject NotificationService NotificationService
-@inject DialogService DialogService;
-@inject ContextMenuService ContextMenuService
-@inject TooltipService TooltipService
+@inject NotificationMessage notificationMessager
+@inject NotificationService notificationService
+@inject DialogService dialogService;
+@inject ContextMenuService contextMenuService
+@inject TooltipService tooltipService

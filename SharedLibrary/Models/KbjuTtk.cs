@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace SharedLibrary.Models;
 
@@ -38,8 +39,8 @@ public partial class KbjuTtk
     public float? Carbohydrates100 { get; set; }
 
     public float? Calories100 { get; set; }
-
+    [JsonIgnore]
     public virtual Ttk? Ttk { get; set; }
-
+    [JsonIgnore]
     public virtual VolumesDim? Volume { get; set; }
 }

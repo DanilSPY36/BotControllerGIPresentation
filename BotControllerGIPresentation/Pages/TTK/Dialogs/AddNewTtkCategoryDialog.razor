@@ -20,9 +20,9 @@ else
             Style="--rz-grid-header-font-weight: bold;  width: contain; min-width: 400px;">
                 <HeaderTemplate>
                     <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Icon="add" Click="@AddNewCategory" Disabled="@(EditMode)" 
-                    MouseEnter="@(args => TooltipService.Open(args, $"Добавить новую категорию",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Добавить новую категорию",
                               new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
 
                     <RadzenSwitch @bind-Value=@CascadingDelete Change=@(args => OnCascadingDeleteChange(args)) 
                     InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Switch value" }})"
@@ -31,9 +31,9 @@ else
                                  --rz-switch-unchecked-background-color: #ffcccc;
                                  --rz-switch-unchecked-circle-background-color: #ffffff;
                                  margin-left: 10px;"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Удаление категории вместе с тех. картами",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Удаление категории вместе с тех. картами",
                               new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-danger-light); color: var(--rz-text-contrast-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
                 </HeaderTemplate>
                 <EmptyTemplate>
                     <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">упс.. У вас нет категорий</p>
@@ -60,9 +60,9 @@ else
                     <RadzenDataGridColumn TItem="CategoriesDim" TextAlign="TextAlign.Center" MinWidth="40px" Width="50px">
                         <Template Context="item">
                             <RadzenButton Visible="item.Id != 0" Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditCategory(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Category}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Редактировать {item.Category}",
                                     new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                             <RadzenButton Visible="item.Id != 0"
                             Icon="delete"
                             ButtonStyle="@buttonForDeleteStyle"
@@ -74,14 +74,14 @@ else
                         </Template>
                         <EditTemplate Context="item">
                             <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => SaveChangesCategory(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Сохранить {item.Category}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Сохранить {item.Category}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
 
                             <RadzenButton Icon="cancel" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CancelEdit(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Оттменить изменения {item.Category}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Оттменить изменения {item.Category}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                         </EditTemplate>
                     </RadzenDataGridColumn>
 
@@ -164,7 +164,7 @@ else
 
     private async Task AddNewCategory()
     {
-        TooltipService.Close();
+        tooltipService.Close();
         EditMode = true;
         ItemToInsert = new();
         await CategoryDG.InsertRow(ItemToInsert);
@@ -173,7 +173,7 @@ else
     private async Task OnCreateRow(CategoriesDim updateCatrgory)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = updateCatrgory;
         await CategoryDG.EditRow(updateCatrgory);
     }
@@ -182,7 +182,7 @@ else
     private async Task EditCategory(CategoriesDim CategoryforUpdate)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, CategoryforUpdate);
         DeepCopyUpdateitem = await SessionStorageService.CreateDeepCopy(jsRuntime, CategoryforUpdate);
         ItemToUpdate = CategoryforUpdate;
@@ -193,7 +193,7 @@ else
     private void CancelEdit(CategoriesDim item)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (DeepCopyUpdateitem is not null)
@@ -213,7 +213,7 @@ else
     private async Task SaveChangesCategory(CategoriesDim changedCategory)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         if (ItemToInsert is not null)
         {
             var result = await CategoriesDimService.AddAsync(changedCategory);
@@ -239,7 +239,7 @@ else
 
     private async Task DeleteCategory(CategoriesDim CategoryForDelete)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         var ttkres = await TtkService.GetTtkItemsByCategoryId(CategoryForDelete.Id);
 
         // проверка есть ли у категории объекты
@@ -247,7 +247,7 @@ else
         {
             if (CascadingDelete)
             {
-                var dialogResult = await DialogService.OpenAsync("", ds =>
+                var dialogResult = await dialogService.OpenAsync("", ds =>
     @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
         <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить категорию вместе с тех. картами?"></RadzenText>
         <RadzenText Text="При удалении категории также будут удалены технические карты и вся связанная информация."
@@ -269,7 +269,7 @@ else
             }
             else
             {
-                var dialogResult = await DialogService.OpenAsync("",ds =>
+                var dialogResult = await dialogService.OpenAsync("",ds =>
     @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
         <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить категорию?"></RadzenText>
                     <RadzenText Text="Категория будет удалена. Тех. карты данной категории присвоятся базовой категории"
@@ -318,7 +318,7 @@ else
     private async Task OnUpdateRow(CategoriesDim newCatrgory)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (ItemToUpdate is not null)
@@ -338,7 +338,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args, string category)
     {
-        TooltipService.Open(args, $"Удалить {category}",
+        tooltipService.Open(args, $"Удалить {category}",
             new TooltipOptions()
                 {
                     Position = TooltipPosition.Left,
@@ -351,13 +351,13 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         //buttonForDeleteStyle = ButtonStyle.Dark;
     }
 
     private void DialogOnClose()
     {
-        DialogService.Close(CategoriesDims);
+        dialogService.Close(CategoriesDims);
     }
 
 }

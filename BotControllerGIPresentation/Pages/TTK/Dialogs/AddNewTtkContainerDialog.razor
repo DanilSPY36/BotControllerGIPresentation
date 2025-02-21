@@ -20,9 +20,9 @@ else
             Style="--rz-grid-header-font-weight: bold;  width: contain; min-width: 400px;">
                 <HeaderTemplate>
                     <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Icon="add" Click="@AddNewContainer" Disabled="@(EditMode)"
-                    MouseEnter="@(args => TooltipService.Open(args, $"Добавить новую посуду",
+                    MouseEnter="@(args => tooltipService.Open(args, $"Добавить новую посуду",
                               new TooltipOptions(){ Position = TooltipPosition.Right, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                    MouseLeave="@(args => TooltipService.Close())" />
+                    MouseLeave="@(args => tooltipService.Close())" />
                 </HeaderTemplate>
                 <EmptyTemplate>
                     <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">упс.. У вас нет категорий</p>
@@ -49,9 +49,9 @@ else
                     <RadzenDataGridColumn TItem="ContainersDim" TextAlign="TextAlign.Center" MinWidth="40px" Width="50px">
                         <Template Context="item">
                             <RadzenButton Visible="item.Id != 0" Icon="edit" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => EditContainer(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Редактировать {item.Container}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Редактировать {item.Container}",
                                     new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                             <RadzenButton Visible="item.Id != 0"
                             Icon="delete"
                             ButtonStyle="ButtonStyle.Danger"
@@ -63,14 +63,14 @@ else
                         </Template>
                         <EditTemplate Context="item">
                             <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => SaveChangesContainer(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Сохранить {item.Container}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Сохранить {item.Container}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
 
                             <RadzenButton Icon="cancel" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Click="@(args => CancelEdit(item))"
-                            MouseEnter="@(args => TooltipService.Open(args, $"Оттменить изменения {item.Container}",
+                            MouseEnter="@(args => tooltipService.Open(args, $"Оттменить изменения {item.Container}",
                           new TooltipOptions(){ Position = TooltipPosition.Left, Delay = 500, Duration = 5000, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" }) )"
-                            MouseLeave="@(args => TooltipService.Close())" />
+                            MouseLeave="@(args => tooltipService.Close())" />
                         </EditTemplate>
                     </RadzenDataGridColumn>
 
@@ -142,7 +142,7 @@ else
 
     private async Task AddNewContainer()
     {
-        TooltipService.Close();
+        tooltipService.Close();
         EditMode = true;
         ItemToInsert = new();
         await ContainersDG.InsertRow(ItemToInsert);
@@ -150,7 +150,7 @@ else
     private async Task OnCreateRow(ContainersDim updateContainer)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = updateContainer;
         await ContainersDG.EditRow(updateContainer);
     }
@@ -158,7 +158,7 @@ else
     private async Task OnUpdateRow(ContainersDim newContainer)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (ItemToUpdate is not null)
@@ -175,7 +175,7 @@ else
     private async Task EditContainer(ContainersDim ContainerforUpdate)
     {
         EditMode = true;
-        TooltipService.Close();
+        tooltipService.Close();
         await SessionStorageService.SetNewItemInSessionStorage(jsRuntime, ContainerforUpdate);
         DeepCopyUpdateitem = await SessionStorageService.CreateDeepCopy(jsRuntime, ContainerforUpdate);
         ItemToUpdate = ContainerforUpdate;
@@ -185,12 +185,12 @@ else
 
     private async Task DeleteContainer(ContainersDim ContainerForDelete)
     {
-        TooltipService.Close();
+        tooltipService.Close();
 
         // проверка есть ли у категории объекты
         if (ContainerForDelete.Ttks.Count() != 0)
         {
-            var dialogResult = await DialogService.OpenAsync("", ds =>
+            var dialogResult = await dialogService.OpenAsync("", ds =>
                 @<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
                     <RadzenText TextStyle="TextStyle.DisplayH5" class="rz-color-danger-dark rz-text-wrap" Text="Удалить посуду для подачи?"></RadzenText>
                     <RadzenText Text="Тех. карты будут без указания посуды для подачи"
@@ -242,7 +242,7 @@ else
     private async Task SaveChangesContainer(ContainersDim changedContainer)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         if (ItemToInsert is not null)
         {
             var result = await ContainerDimService.AddAsync(changedContainer);
@@ -269,7 +269,7 @@ else
     private void CancelEdit(ContainersDim item)
     {
         EditMode = false;
-        TooltipService.Close();
+        tooltipService.Close();
         ItemToInsert = null!;
         ItemToUpdate = null!;
         if (DeepCopyUpdateitem is not null)
@@ -288,7 +288,7 @@ else
 
     private void OnMouseDeleteEnter(ElementReference args, string container)
     {
-        TooltipService.Open(args, $"Удалить {container}",
+        tooltipService.Open(args, $"Удалить {container}",
             new TooltipOptions()
                 {
                     Position = TooltipPosition.Left,
@@ -300,12 +300,12 @@ else
     }
     private void OnMouseDeleteEnter(ElementReference args)
     {
-        TooltipService.Close();
+        tooltipService.Close();
         //buttonForDeleteStyle = ButtonStyle.Dark;
     }
 
     private void DialogOnClose()
     {
-        DialogService.Close(ContainersDims);
+        dialogService.Close(ContainersDims);
     }
 }

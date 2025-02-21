@@ -1,3 +1,5 @@
+using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using BotControllerGIPresentationServer.ApplicationDbContext;
 using BotControllerGIPresentationServer.Auth;
 using BotControllerGIPresentationServer.GenericRepositories;
@@ -19,6 +21,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddApiAuthentication(configuration: builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddBlazoredSessionStorage(config => config.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddControllersWithViews(); 
 builder.Services.AddRazorComponents();
