@@ -5,8 +5,6 @@ namespace SharedLibrary.Models;
 
 public partial class User
 {
-    public int Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string? FirstName { get; set; }
@@ -21,17 +19,23 @@ public partial class User
 
     public bool? IsAccess { get; set; }
 
-    public int? SpotId { get; set; }
+    public int? MainSpotId { get; set; }
 
     public int? RoleId { get; set; }
 
-    public string PasswordHash { get;  set; } = string.Empty;
+    public int Id { get; set; }
 
-    public string Email { get;  set; } = string.Empty;
+    public string Passwordhash { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
+    public int? HrPositionId {  get; set; }
+    
+    public virtual HrPosition? HrPosition { get; set; }
+
+    public virtual SpotsDim? MainSpot { get; set; }
 
     public virtual RolesDim? Role { get; set; }
 
-    public virtual SpotsDim? Spot { get; set; }
+    public virtual ICollection<UsersSpot> UsersSpots { get; set; } = new List<UsersSpot>();
 
-    
 }

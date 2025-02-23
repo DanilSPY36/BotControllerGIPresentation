@@ -12,6 +12,12 @@ public partial class SpotsDim
     public string? Region { get; set; }
 
     public string? City { get; set; }
+    public string? Inn { get; set; }
+    public string? FullAdress { get; set; }
+
+    public virtual ICollection<HrpositionSpot> HrpositionSpots { get; set; } = new List<HrpositionSpot>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public virtual ICollection<UsersSpot> UsersSpots { get; set; } = new List<UsersSpot>();
 }

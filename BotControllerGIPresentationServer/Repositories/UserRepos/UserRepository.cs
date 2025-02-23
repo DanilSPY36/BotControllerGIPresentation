@@ -5,6 +5,7 @@ using BotControllerGIPresentationServer.IRepositories.UserIRepository;
 using BotControllerGIPresentationServer.JWT;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
 
 namespace BotControllerGIPresentationServer.Repositories.UserRepos
@@ -18,7 +19,29 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
             _passwordHasher = passwordHasher;
             _userJwtProvider = userJwtProvider;
         }
-
+        public async Task<UserDTO> GetUserDTOByUserId(int UserId) 
+        {
+            var UserFromDb = await _context.Users.FindAsync(UserId);
+            if(UserFromDb is not null) 
+            {
+                var userDTO = new UserDTO()
+                {
+                    id = UserFromDb.Id,
+                    RoleId = UserFromDb.RoleId,
+                    FirstName = UserFromDb.FirstName!,
+                    LastName = UserFromDb.LastName!,
+                    UsersSpots = UserFromDb.UsersSpots,
+                    HrPositionId = UserFromDb.HrPositionId,
+                    HrPosition = await _context.HrPositions.Where(x => x.Id == UserFromDb.HrPositionId).FirstOrDefaultAsync(),
+                };
+                return userDTO;
+                //var hrPosition = await _context.HrPositions.FindAsync(UserFromDb.HrPositionId);
+            }
+            else 
+            {
+                return null!;
+            }
+        }
         public async Task<string> Register(string userName, string email, string password)
         {
             var hashedPassword = _passwordHasher.Generate(password);
@@ -26,7 +49,7 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
             {
                 Name = userName,
                 Email = email,
-                PasswordHash = hashedPassword
+                Passwordhash = hashedPassword
             };
             var result = await _context.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -47,7 +70,7 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
 
             if (userFromDb is not null) 
             {
-                var result = _passwordHasher.Verify(password, userFromDb.PasswordHash);
+                var result = _passwordHasher.Verify(password, userFromDb.Passwordhash);
                 if(result == true) 
                 {
                     var JwtToken = _userJwtProvider.GenerateToken(userFromDb);

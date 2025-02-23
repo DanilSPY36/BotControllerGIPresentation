@@ -24,6 +24,23 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
             var items = await _repository.GetAllAsync();
             return Ok(items);
         }
+        [HttpGet("GetUserDTOByUserId/{UserId:int}")]
+        public async Task<ActionResult<UserDTO>> GetUserDTOByUserId(int UserId) 
+        {
+            try
+            {
+                var user = await _repository.GetUserDTOByUserId(UserId);
+                if (user == null)
+                {
+                    return NotFound("Пользователь не найден.");
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            }
+        }
         [HttpGet("GetTEST")]
         public ActionResult<IEnumerable<User>> GetTEST()
         {

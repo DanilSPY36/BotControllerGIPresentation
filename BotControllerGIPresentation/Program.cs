@@ -4,8 +4,10 @@ using Blazored.SessionStorage;
 using BotControllerGIPresentation;
 using BotControllerGIPresentation.GenericService;
 using BotControllerGIPresentation.IServices;
+using BotControllerGIPresentation.IServices.ISpotsDimServices;
 using BotControllerGIPresentation.IServices.IUserServices;
 using BotControllerGIPresentation.Services;
+using BotControllerGIPresentation.Services.SpotsDimServices;
 using BotControllerGIPresentation.Services.UserServices;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -31,6 +33,17 @@ builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
+
+
+
+builder.Services.AddHttpClient<IUserSpotsService, UserSpotsService>(client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+builder.Services.AddHttpClient<ISpotsDimService, SpotsDimService>(client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
 
 
 builder.Services.AddHttpClient<IUserService, UserService>(client =>

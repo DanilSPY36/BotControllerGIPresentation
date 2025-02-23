@@ -1,27 +1,40 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
-@using BotControllerGIPresentation.IServices
-@using BotControllerGIPresentation.IServices.IUserServices
+@using System.Net.Http.Headers
+@using System.Text.Json
+
+@using Microsoft.JSInterop
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
-@using Microsoft.JSInterop
+
+@using Radzen
+@using Radzen.Blazor
+
+
+
+
+@using BotControllerGIPresentation.IServices
+@using BotControllerGIPresentation.IServices.IUserServices
+@using BotControllerGIPresentation.IServices.ISpotsDimServices
+
+
 @using BotControllerGIPresentation
 @using BotControllerGIPresentation.Layout 
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @using BotControllerGIPresentation.GenericService
 @using BotControllerGIPresentation.CustomElements
 @using BotControllerGIPresentation.Pages.TTK.Dialogs
 @using BotControllerGIPresentation.Pages.TTK
-@using System.Net.Http.Headers
-@using System.Text.Json
 
 
-@using Radzen
-@using Radzen.Blazor
+
+
 
 @using SharedLibrary.DataTransferObjects
 @using SharedLibrary.Models
@@ -32,6 +45,9 @@
 @inject IVolumesDimService VolumesDimService
 @inject IKbjuTtkService KbjuTtkService
 @inject IUserService UserService
+
+@inject IUserSpotsService  UserSpotsService
+
 
 @inject IUploadService UploadService
 

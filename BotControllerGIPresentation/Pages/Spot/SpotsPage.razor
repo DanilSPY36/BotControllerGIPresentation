@@ -1,0 +1,70 @@
+﻿@page "/MySpotsPage"
+
+
+
+@if (showWait)
+{
+    <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    if (!spotsIsNullOrEmpty)
+    {
+
+    }
+    else
+    {
+        <RadzenRow Gap="0" class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10" Style="width: 100%; max-width: 800px; overflow: hidden;">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12" Style="height: 100%; background: var(--rz-primary-light) no-repeat 100% 70% fixed url('/images/diamond-sunset.svg')">
+                    <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H2" class="rz-color-white rz-mb-6">Мои заведения</RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" class="rz-color-white">На данной странице осуществлятся регистрация и уравление заведениями.</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">У вас пока что нет ни одного заведения</RadzenText>
+                </RadzenCard>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-p-12">
+                    <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">
+                        Пара шагов для регистрации
+                    </RadzenText>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+}
+
+
+
+
+@code 
+{
+    private bool showWait = true;
+
+    private UserDTO? AuthUserDTO = new UserDTO();
+
+    private IEnumerable<UsersSpot>? UserSpotsList = new List<UsersSpot>();
+    private IEnumerable<SpotsDim>? SpotsList = new List<SpotsDim>();
+
+
+
+    private bool spotsIsNullOrEmpty = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync(); 
+        if(state is not null)
+        {
+            if(state.User.Identity is not null)
+            {
+                if (state.User.Identity.IsAuthenticated)
+                {
+                    var userIdstr = state.User.FindFirst("userId")?.Value;
+                    int.TryParse(userIdstr, out int userId);
+                    AuthUserDTO = await UserService.GetUserDTOByUserId(userId);
+                }
+            }
+        }
+        showWait = false;
+    }
+}

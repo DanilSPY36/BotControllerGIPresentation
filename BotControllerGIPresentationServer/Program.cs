@@ -4,9 +4,11 @@ using BotControllerGIPresentationServer.ApplicationDbContext;
 using BotControllerGIPresentationServer.Auth;
 using BotControllerGIPresentationServer.GenericRepositories;
 using BotControllerGIPresentationServer.IRepositories;
+using BotControllerGIPresentationServer.IRepositories.SpotIRepositories;
 using BotControllerGIPresentationServer.IRepositories.UserIRepository;
 using BotControllerGIPresentationServer.JWT;
 using BotControllerGIPresentationServer.Repositories;
+using BotControllerGIPresentationServer.Repositories.SpotRepositories;
 using BotControllerGIPresentationServer.Repositories.UserRepos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -34,6 +36,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 #region Repositories
+
+
+
+builder.Services.AddScoped<IUserSpotsRepository, UserSpotsRepository>();
+builder.Services.AddScoped<ISpotsDimRepository, SpotsDimRepository>();
+
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<ICategoriesDimRepository, CategoriesDimRepository>();

@@ -36,7 +36,28 @@ namespace BotControllerGIPresentation.Services.UserServices
                 return null!;
             }
         }
+        public async Task<UserDTO> GetUserDTOByUserId(int UserId) 
+        {
+            var response = await _httpClient.GetAsync($"api/User/GetUserDTOByUserId/{UserId}");
 
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var user = JsonSerializer.Deserialize<UserDTO>(jsonResponse);
+                if (user != null)
+                {
+                    return user;
+                }
+                else
+                {
+                    return null!;
+                }
+            }
+            else
+            {
+                return null!;
+            }
+        }
         public async Task<bool> CheckUserEmail(string userDtoEmail)
         {
             var response = await _httpClient.PostAsJsonAsync($"api/User/CheckUserEmail", userDtoEmail);

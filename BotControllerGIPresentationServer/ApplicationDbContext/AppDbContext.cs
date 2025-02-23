@@ -30,6 +30,10 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ContainersDim> ContainersDims { get; set; }
 
+    public virtual DbSet<HrPosition> HrPositions { get; set; }
+
+    public virtual DbSet<HrpositionSpot> HrpositionSpots { get; set; }
+
     public virtual DbSet<Item> Items { get; set; }
 
     public virtual DbSet<KbjuTtk> KbjuTtks { get; set; }
@@ -51,6 +55,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Ttk> Ttks { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UsersSpot> UsersSpots { get; set; }
 
     public virtual DbSet<VolumesDim> VolumesDims { get; set; }
 
@@ -96,16 +102,13 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("categories_dim", "ttk_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.Category)
                 .HasColumnType("character varying")
                 .HasColumnName("category");
             entity.Property(e => e.Description)
                 .HasColumnType("character varying")
                 .HasColumnName("description");
-            entity.HasMany(e => e.Ttks) 
-                .WithOne(e => e.Category) 
-                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CategoriesItemsDim>(entity =>
@@ -128,13 +131,46 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("containers_dim", "ttk_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.Container)
                 .HasColumnType("character varying")
                 .HasColumnName("container");
             entity.Property(e => e.Description)
                 .HasColumnType("character varying")
                 .HasColumnName("description");
+        });
+
+        modelBuilder.Entity<HrPosition>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("hr_position_pkey");
+
+            entity.ToTable("hr_position", "user_prod");
+
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<HrpositionSpot>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("hrposition_spots_pkey");
+
+            entity.ToTable("hrposition_spots", "user_prod");
+
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(e => e.HrPositionId).HasColumnName("hr_position_id");
+            entity.Property(e => e.Spotid).HasColumnName("spotid");
+
+            entity.HasOne(d => d.HrPosition).WithMany(p => p.HrpositionSpots)
+                .HasForeignKey(d => d.HrPositionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("hrposition_spots_hr_position_id_fkey");
+
+            entity.HasOne(d => d.Spot).WithMany(p => p.HrpositionSpots)
+                .HasForeignKey(d => d.Spotid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("hrposition_spots_spotid_fkey");
         });
 
         modelBuilder.Entity<Item>(entity =>
@@ -205,7 +241,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("kbju_ttk", "ttk_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.Caffeine).HasColumnName("caffeine");
             entity.Property(e => e.Caffeine100).HasColumnName("caffeine100");
             entity.Property(e => e.Calories).HasColumnName("calories");
@@ -259,7 +295,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("operations", "statistic_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.BranchId).HasColumnName("branch_id");
             entity.Property(e => e.IsFake).HasColumnName("is_fake");
             entity.Property(e => e.IsSearch).HasColumnName("is_search");
@@ -294,7 +330,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("roles_dim", "user_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.RoleName)
                 .HasColumnType("character varying")
                 .HasColumnName("role_name");
@@ -415,7 +451,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("spots_dim", "user_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.City)
                 .HasColumnType("character varying")
                 .HasColumnName("city");
@@ -425,6 +461,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.SpotName)
                 .HasColumnType("character varying")
                 .HasColumnName("spot_name");
+            entity.Property(e => e.Inn)
+                    .HasColumnType("character varying")
+                    .HasColumnName("inn"); 
+            entity.Property(e => e.FullAdress)
+                .HasColumnType("character varying")
+                .HasColumnName("full_adress");
         });
 
         modelBuilder.Entity<Ttk>(entity =>
@@ -433,7 +475,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("ttk", "ttk_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.Additives)
                 .HasColumnType("character varying")
                 .HasColumnName("additives");
@@ -489,8 +531,11 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("users", "user_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.ChatId).HasColumnName("chat_id");
+            entity.Property(e => e.Email)
+                .HasColumnType("character varying")
+                .HasColumnName("email");
             entity.Property(e => e.FirstName)
                 .HasColumnType("character varying")
                 .HasColumnName("first_name");
@@ -499,26 +544,50 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LastName)
                 .HasColumnType("character varying")
                 .HasColumnName("last_name");
+            entity.Property(e => e.MainSpotId).HasColumnName("main_spot_id");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
-            entity.Property(e => e.PasswordHash)
+            entity.Property(e => e.Passwordhash)
                 .HasColumnType("character varying")
                 .HasColumnName("passwordhash");
-            entity.Property(e => e.Email)
-                .HasColumnType("character varying")
-                .HasColumnName("email");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
-            entity.Property(e => e.SpotId).HasColumnName("spot_id");
             entity.Property(e => e.TgUserId).HasColumnName("tg_user_id");
+
+            entity.HasOne(d => d.MainSpot).WithMany(p => p.Users)
+                .HasForeignKey(d => d.MainSpotId)
+                .HasConstraintName("users_spots_dim_fk");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .HasConstraintName("users_roles_dim_fk");
+            entity.Property(e => e.HrPositionId).HasColumnName("hr_position_id");
+            entity.HasOne(d => d.HrPosition) 
+                .WithMany(p => p.Users) 
+                .HasForeignKey(d => d.HrPositionId)
+                .HasConstraintName("users_hr_position_fk");
 
-            entity.HasOne(d => d.Spot).WithMany(p => p.Users)
-                .HasForeignKey(d => d.SpotId)
-                .HasConstraintName("users_spots_dim_fk");
+        });
+
+        modelBuilder.Entity<UsersSpot>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("users_spots_pkey");
+
+            entity.ToTable("users_spots", "user_prod");
+
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(e => e.Spotid).HasColumnName("spotid");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Spot).WithMany(p => p.UsersSpots)
+                .HasForeignKey(d => d.Spotid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("users_spots_spotid_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UsersSpots)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("users_spots_user_id_fkey");
         });
 
         modelBuilder.Entity<VolumesDim>(entity =>
@@ -527,20 +596,17 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("volumes_dim", "ttk_prod");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.Description)
                 .HasColumnType("character varying")
                 .HasColumnName("description");
             entity.Property(e => e.Volume)
                 .HasColumnType("character varying")
                 .HasColumnName("volume");
-
-            entity.HasMany(e => e.Ttks) // Замените на вашу навигационную коллекцию
-                .WithOne(e => e.Volume) // Замените на вашу навигационную сущность
-                .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.HasSequence("categories_dim_id_seq", "ttk_prod");
         modelBuilder.HasSequence("containers_dim_id_seq", "ttk_prod");
+        modelBuilder.HasSequence("hr_position_id_seq", "user_prod");
         modelBuilder.HasSequence("kbju_ttk_id_seq", "ttk_prod");
         modelBuilder.HasSequence("operations_id_seq", "statistic_prod").HasMax(2147483647L);
         modelBuilder.HasSequence("roles_dim_id_seq", "user_prod");
@@ -551,7 +617,6 @@ public partial class AppDbContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
-
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 

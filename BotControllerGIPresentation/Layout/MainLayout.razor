@@ -44,11 +44,12 @@
     </RadzenHeader>
     <AuthorizeView>
         <Authorized>
-            <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+            <RadzenSidebar @bind-Expanded="@sidebar1Expanded" Style="width: 200px;">
                 <RadzenPanelMenu>
-                    <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
-                    <RadzenPanelMenuItem Text="Users" Icon="account_box" Path="/weather" />
-                    <RadzenPanelMenuItem Text="ТТК" Icon="account_box" Path="/ttkTable" />
+                    <RadzenPanelMenuItem Text="Мои заведения" Icon="deck" Path="/MySpotsPage" />
+                    <RadzenPanelMenuItem Text="Мои сотрудники" Icon="diversity_1" Path="/MyEmployeesPage" />
+                    <RadzenPanelMenuItem Text="Меню" Icon="menu_book" Path="/ttkTable" />
+                    <RadzenPanelMenuItem Text="Мои поставщики" Icon="local_shipping" Path="/MyShippersPage" />
                 </RadzenPanelMenu>
             </RadzenSidebar>
         </Authorized>
