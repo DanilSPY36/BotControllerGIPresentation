@@ -6,14 +6,16 @@
 </HeadContent>
 
 <RadzenLayout>
-    <RadzenHeader Style="background-color:aliceblue;">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+    <RadzenHeader Style="background-color:white;">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
             <AuthorizeView>
                 <Authorized>
-                    <RadzenSidebarToggle Style="color:black" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-                    <RadzenProfileMenu Style="background-color: aliceblue; color: black;">
+                    <RadzenStack Style="height 100%; background: var(--rz-primary-light) no-repeat url('/images/UserSVGRightSide.svg')">
+                        <RadzenSidebarToggle Style="height 100%; color:white" class="sidebar-toggle" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+                    </RadzenStack>
+                    <RadzenProfileMenu Style="background: var(--rz-primary-light) no-repeat url('/images/UserSVGv2.svg')">
                         <Template>
-                            <RadzenImage Path="images/notFoundUser.png" Style="width: 32px;height: 32px;" class="rz-border-radius-10" />
+                            <RadzenImage Path="images/notFoundUser.png" Style="width: 40px; height: 40px;" class="rz-border-radius-10" />
                         </Template>
                         <ChildContent>
                             <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Center" Style="width: 100%; height: 100%;">
@@ -26,9 +28,9 @@
                 </Authorized>
                 <NotAuthorized>
                     <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
-                    <RadzenProfileMenu Style="background-color: aliceblue; color: black;">
+                    <RadzenProfileMenu Style="background: var(--rz-primary-light) no-repeat url('/images/UserSVGv2.svg')">
                         <Template>
-                            <RadzenImage Path="images/notFoundUser.png" Style="width: 32px;height: 32px;" class="rz-border-radius-10" />
+                            <RadzenImage Path="images/notFoundUser.png" class="rz-border-radius-10" Style="width: 40px; height: 40px;" />
                         </Template>
                         <ChildContent>
                             <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Center" Style="width: 100%; height: 100%;">
@@ -61,6 +63,18 @@
     </RadzenBody>
 </RadzenLayout>
 
+<style>
+    .sidebar-toggle {
+        height: 100%;
+        color: white;
+        transition: color 0.5s, opacity 0.5s; /* Плавный переход */
+    }
+
+        .sidebar-toggle:hover {
+            color: rgba(255, 255, 255, 0.7); /* Измените цвет и прозрачность */
+            background-color: rgba(0, 0, 0, 0); /* Пример фона при наведении */
+        }
+</style>
 
 @code {
     private UserLoginDto? userLoginDto { get; set; }

@@ -17,7 +17,7 @@ else
     {
         <RadzenRow Gap="0" class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10" Style="width: 100%; max-width: 800px; overflow: hidden;">
             <RadzenColumn Size="12" SizeMD="6">
-                <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12" Style="height: 100%; background: var(--rz-primary-light) no-repeat 100% 70% fixed url('/images/diamond-sunset.svg')">
+                <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12" Style="height: 100%; background: var(--rz-primary-light) no-repeat 100% 70% fixed url('/images/MySpots.svg')">
                     <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H2" class="rz-color-white rz-mb-6">Мои заведения</RadzenText>
                     <RadzenText TextStyle="TextStyle.H6" class="rz-color-white">На данной странице осуществлятся регистрация и уравление заведениями.</RadzenText>
                     <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">У вас пока что нет ни одного заведения</RadzenText>
@@ -28,6 +28,46 @@ else
                     <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">
                         Пара шагов для регистрации
                     </RadzenText>
+                    <RadzenFormField Text="Название завидения" Variant="Variant.Outlined" Style="width:100%;">
+                        <End>
+                            <RadzenIcon Icon="signature"/>
+                        </End>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value=@NewSpot.SpotName></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Страна" Variant="Variant.Outlined" Style="width:100%;">
+                        <End>
+                            <RadzenIcon Icon="public" />
+                        </End>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value=@NewSpot.Region></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Город" Variant="Variant.Outlined" Style="width:100%;">
+                        <End>
+                            <RadzenIcon Icon="location_city" />
+                        </End>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value=@NewSpot.City></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Улица и дом" Variant="Variant.Outlined" Style="width:100%;">
+                        <End>
+                            <RadzenIcon Icon="signpost" />
+                        </End>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value=@NewSpot.FullAdress></RadzenTextBox>
+                        </ChildContent>
+                    </RadzenFormField>
+                    <RadzenFormField Text="ИНН организации" Variant="Variant.Outlined" Style="width:100%;">
+                        <End>
+                            <RadzenIcon Icon="123" />
+                        </End>
+                        <ChildContent>
+                            <RadzenMask @bind-Value=@NewSpot.Inn MaxLength="12" Mask="************" CharacterPattern="[0-9]"></RadzenMask>
+                        </ChildContent>
+                    </RadzenFormField>
                 </RadzenCard>
             </RadzenColumn>
         </RadzenRow>
@@ -46,7 +86,7 @@ else
     private IEnumerable<UsersSpot>? UserSpotsList = new List<UsersSpot>();
     private IEnumerable<SpotsDim>? SpotsList = new List<SpotsDim>();
 
-
+    private SpotsDim NewSpot { get; set; } = new();
 
     private bool spotsIsNullOrEmpty = true;
 
