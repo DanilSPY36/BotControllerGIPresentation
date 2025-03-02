@@ -11,7 +11,7 @@ public partial class UsersSpot
 
     public int Spotid { get; set; }
 
-    public virtual SpotsDim Spot { get; set; } = null!;
+    public virtual SpotsDim? Spot { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; } = null!;
 }

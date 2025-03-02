@@ -1,5 +1,6 @@
 ﻿@page "/MySpotsPage"
-
+@inject ISpotsDimService SpotsDimService;
+@inject IUserSpotsService UsersSpotService;
 
 
 @if (showWait)
@@ -15,62 +16,72 @@ else
     }
     else
     {
+
         <RadzenRow Gap="0" class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10" Style="width: 100%; max-width: 800px; overflow: hidden;">
             <RadzenColumn Size="12" SizeMD="6">
                 <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12" Style="height: 100%; background: var(--rz-primary-light) no-repeat 100% 70% fixed url('/images/MySpots.svg')">
-                    <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H2" class="rz-color-white rz-mb-6">Мои заведения</RadzenText>
-                    <RadzenText TextStyle="TextStyle.H6" class="rz-color-white">На данной странице осуществлятся регистрация и уравление заведениями.</RadzenText>
-                    <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">У вас пока что нет ни одного заведения</RadzenText>
+                    <RadzenStack Style="width: 100%; height: 100%;" AlignItems="AlignItems.Center" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+                        <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H2" class="rz-color-white rz-mb-6">Мои заведения</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" class="rz-color-white rz-mb-6">На данной странице осуществлятся регистрация и уравление заведениями.</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">У вас пока что нет ни одного заведения</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">Это надо быстро исправить</RadzenText>
+                    </RadzenStack>
                 </RadzenCard>
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="6">
                 <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-p-12">
-                    <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">
+                    <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2">
                         Пара шагов для регистрации
                     </RadzenText>
                     <RadzenFormField Text="Название завидения" Variant="Variant.Outlined" Style="width:100%;">
                         <End>
-                            <RadzenIcon Icon="signature"/>
+                            <RadzenIcon Icon="signature" IconColor="@NameIcon" />
                         </End>
                         <ChildContent>
-                            <RadzenTextBox @bind-Value=@NewSpot.SpotName></RadzenTextBox>
+                            <RadzenTextBox @bind-Value=@NewSpot.SpotName @onclick="@(args => NameIcon = Colors.Black)"></RadzenTextBox>
                         </ChildContent>
+
                     </RadzenFormField>
                     <RadzenFormField Text="Страна" Variant="Variant.Outlined" Style="width:100%;">
                         <End>
-                            <RadzenIcon Icon="public" />
+                            <RadzenIcon Icon="public" IconColor="@RegionColor" />
                         </End>
                         <ChildContent>
-                            <RadzenTextBox @bind-Value=@NewSpot.Region></RadzenTextBox>
+                            <RadzenTextBox @bind-Value=@NewSpot.Region @onclick="@(args => RegionColor = Colors.Black)"></RadzenTextBox>
                         </ChildContent>
                     </RadzenFormField>
                     <RadzenFormField Text="Город" Variant="Variant.Outlined" Style="width:100%;">
                         <End>
-                            <RadzenIcon Icon="location_city" />
+                            <RadzenIcon Icon="location_city" IconColor="@CityColor" />
                         </End>
                         <ChildContent>
-                            <RadzenTextBox @bind-Value=@NewSpot.City></RadzenTextBox>
+                            <RadzenTextBox @bind-Value=@NewSpot.City @onclick="@(args => CityColor = Colors.Black)"></RadzenTextBox>
                         </ChildContent>
                     </RadzenFormField>
                     <RadzenFormField Text="Улица и дом" Variant="Variant.Outlined" Style="width:100%;">
                         <End>
-                            <RadzenIcon Icon="signpost" />
+                            <RadzenIcon Icon="signpost" IconColor="@FullAdressCalor" />
                         </End>
                         <ChildContent>
-                            <RadzenTextBox @bind-Value=@NewSpot.FullAdress></RadzenTextBox>
+                            <RadzenTextBox @bind-Value=@NewSpot.FullAdress @onclick="@(args => FullAdressCalor = Colors.Black)"></RadzenTextBox>
                         </ChildContent>
                     </RadzenFormField>
                     <RadzenFormField Text="ИНН организации" Variant="Variant.Outlined" Style="width:100%;">
                         <End>
-                            <RadzenIcon Icon="123" />
+                            <RadzenIcon Icon="123" IconColor="@InnColor" />
                         </End>
                         <ChildContent>
-                            <RadzenMask @bind-Value=@NewSpot.Inn MaxLength="12" Mask="************" CharacterPattern="[0-9]"></RadzenMask>
+                            <RadzenMask @bind-Value=@NewSpot.Inn MaxLength="12" Mask="************" CharacterPattern="[0-9]" @onclick="@(args => InnColor = Colors.Black)"></RadzenMask>
                         </ChildContent>
                     </RadzenFormField>
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Style="width: 100%; margin-top: 10px;">
+                        <RadzenButton Click="@Submit" ButtonType="ButtonType.Submit" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Dark" Style="width: 200px;" Variant="Variant.Outlined" Icon="save" Text="Зарегистрировать" />
+                    </RadzenStack>
+
                 </RadzenCard>
             </RadzenColumn>
         </RadzenRow>
+
     }
 }
 
@@ -79,16 +90,25 @@ else
 
 @code 
 {
+
     private bool showWait = true;
 
-    private UserDTO? AuthUserDTO = new UserDTO();
+    private UserDTO AuthUserDTO = new UserDTO();
 
     private IEnumerable<UsersSpot>? UserSpotsList = new List<UsersSpot>();
     private IEnumerable<SpotsDim>? SpotsList = new List<SpotsDim>();
-
     private SpotsDim NewSpot { get; set; } = new();
 
     private bool spotsIsNullOrEmpty = true;
+
+
+    private string NameIcon = Colors.Black;
+    private string RegionColor = Colors.Black;
+    private string CityColor = Colors.Black; 
+    private string FullAdressCalor = Colors.Black;
+    private string InnColor = Colors.Black;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,4 +127,56 @@ else
         }
         showWait = false;
     }
+    private async void Submit()
+    {
+        bool EmptyInfoflag = false;
+        if (string.IsNullOrEmpty(NewSpot.SpotName))
+        {
+            NameIcon = Colors.Danger;
+            EmptyInfoflag = true;
+        }
+        if (string.IsNullOrEmpty(NewSpot.Region))
+        {
+            RegionColor = Colors.Danger;
+            EmptyInfoflag = true;
+        }
+        if (string.IsNullOrEmpty(NewSpot.City))
+        {
+            CityColor = Colors.Danger;
+            EmptyInfoflag = true;
+        }
+        if (string.IsNullOrEmpty(NewSpot.FullAdress))
+        {
+            FullAdressCalor = Colors.Danger;
+            EmptyInfoflag = true;
+        }
+        if (string.IsNullOrEmpty(NewSpot.Inn))
+        {
+            InnColor = Colors.Danger;
+            EmptyInfoflag = true;
+        }
+
+
+        if(EmptyInfoflag)
+        {
+            return;
+        }
+        else
+        {
+            
+            var spotFromDb = await SpotsDimService.AddAsync(NewSpot);
+            if (spotFromDb is not null)
+            {
+                var newMapUserSpot = new UsersSpot() { Spotid = spotFromDb.Id, UserId = AuthUserDTO.id };
+                var mapResult = await UsersSpotService.AddAsync(newMapUserSpot);
+                if(mapResult is not null)
+                {
+
+                }
+            }
+        }
+
+    }
+
+
 }

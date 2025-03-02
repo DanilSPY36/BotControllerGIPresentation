@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BotControllerGIPresentation</title>
@@ -13,11 +14,14 @@
     <link href="BotControllerGIPresentation.styles.css" rel="stylesheet" />
     <RadzenTheme Theme="material" @rendermode="InteractiveAuto" />
     <HeadOutlet @rendermode="InteractiveAuto" />
+    <script src="https://api-maps.yandex.ru/v3/?apikey=5ea9e038-bc5a-432a-bfba-b113a8fdd21e&lang=ru_RU" type="text/javascript"></script>
 </head>
 
 <body>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="JS/yMap.js"></script>
+
     <div id="app">
         <svg class="loading-progress">
             <circle r="40%" cx="50%" cy="50%" />
