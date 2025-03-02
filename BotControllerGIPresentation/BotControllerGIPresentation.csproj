@@ -27,6 +27,8 @@
     <Folder Include="Pages\Employee\Dialogs\" />
     <Folder Include="Pages\Shipper\Dialogs\" />
     <Folder Include="Pages\Spot\Dialogs\" />
+    <Folder Include="wwwroot\SpotImages\" />
+    <Folder Include="wwwroot\EmployeeImages\" />
   </ItemGroup>
 
 </Project>

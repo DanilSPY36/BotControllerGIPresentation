@@ -9,9 +9,9 @@ namespace BotControllerGIPresentationServer.Controllers.SpotControllers
     [ApiController]
     public class UsersSpotController : ControllerBase
     {
-        private readonly IUserSpotsRepository _repository;
+        private readonly IUsersSpotRepository _repository;
 
-        public UsersSpotController(IUserSpotsRepository repository)
+        public UsersSpotController(IUsersSpotRepository repository)
         {
             _repository = repository;
         }

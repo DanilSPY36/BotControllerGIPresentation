@@ -36,7 +36,7 @@ builder.Services.AddAuthorizationCore();
 
 
 
-builder.Services.AddHttpClient<IUserSpotsService, UserSpotsService>(client =>
+builder.Services.AddHttpClient<IUserSpotsService, UsersSpotService>(client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });

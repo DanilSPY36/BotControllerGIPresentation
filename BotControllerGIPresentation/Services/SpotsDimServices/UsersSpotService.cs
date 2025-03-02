@@ -5,9 +5,9 @@ using System.Net.Http.Json;
 
 namespace BotControllerGIPresentation.Services.SpotsDimServices
 {
-    public class UserSpotsService : GenericService<UsersSpot>, IUserSpotsService
+    public class UsersSpotService : GenericService<UsersSpot>, IUserSpotsService
     {
-        public UserSpotsService(HttpClient httpClient) : base(httpClient)
+        public UsersSpotService(HttpClient httpClient) : base(httpClient)
         {
         }
 

@@ -93,7 +93,7 @@ else
 
     private bool showWait = true;
 
-    private UserDTO AuthUserDTO = new UserDTO();
+    private UserDTO? AuthUserDTO { get; set; }
 
     private IEnumerable<UsersSpot>? UserSpotsList = new List<UsersSpot>();
     private IEnumerable<SpotsDim>? SpotsList = new List<SpotsDim>();
@@ -122,6 +122,18 @@ else
                     var userIdstr = state.User.FindFirst("userId")?.Value;
                     int.TryParse(userIdstr, out int userId);
                     AuthUserDTO = await UserService.GetUserDTOByUserId(userId);
+                    if(AuthUserDTO is not null)
+                    {
+                        UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+                        if(UserSpotsList is null || UserSpotsList.Count() == 0)
+                        {
+                            spotsIsNullOrEmpty = true;
+                        }
+                        else
+                        {
+                            spotsIsNullOrEmpty = false;
+                        }
+                    }
                 }
             }
         }
@@ -167,7 +179,7 @@ else
             var spotFromDb = await SpotsDimService.AddAsync(NewSpot);
             if (spotFromDb is not null)
             {
-                var newMapUserSpot = new UsersSpot() { Spotid = spotFromDb.Id, UserId = AuthUserDTO.id };
+                var newMapUserSpot = new UsersSpot() { Spotid = spotFromDb.Id, UserId = AuthUserDTO!.id };
                 var mapResult = await UsersSpotService.AddAsync(newMapUserSpot);
                 if(mapResult is not null)
                 {

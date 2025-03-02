@@ -6,7 +6,7 @@ using SharedLibrary.Models;
 
 namespace BotControllerGIPresentationServer.Repositories.SpotRepositories
 {
-    public class UserSpotsRepository : GenericRepository<UsersSpot>, IUserSpotsRepository
+    public class UserSpotsRepository : GenericRepository<UsersSpot>, IUsersSpotRepository
     {
         public UserSpotsRepository(AppDbContext context) : base(context)
         {
@@ -14,7 +14,9 @@ namespace BotControllerGIPresentationServer.Repositories.SpotRepositories
 
         public async Task<IEnumerable<UsersSpot>> GetUserSpotsByUserId(int UserId)
         {
-            var result = await _context.UsersSpots.Where(x => x.UserId == UserId).ToListAsync();
+            var result = await _context.UsersSpots.Where(x => x.UserId == UserId)
+                .Include(s => s.Spot)
+                .ToListAsync();
             if(result is not null) 
             {
                 return result;

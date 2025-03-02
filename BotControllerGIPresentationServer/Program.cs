@@ -39,7 +39,7 @@ builder.Services.AddOpenApi();
 
 
 
-builder.Services.AddScoped<IUserSpotsRepository, UserSpotsRepository>();
+builder.Services.AddScoped<IUsersSpotRepository, UserSpotsRepository>();
 builder.Services.AddScoped<ISpotsDimRepository, SpotsDimRepository>();
 
 

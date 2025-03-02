@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace SharedLibrary.Models;
 
@@ -18,6 +19,6 @@ public partial class SpotsDim
     public virtual ICollection<HrpositionSpot> HrpositionSpots { get; set; } = new List<HrpositionSpot>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
-
+    [JsonIgnore]
     public virtual ICollection<UsersSpot> UsersSpots { get; set; } = new List<UsersSpot>();
 }
