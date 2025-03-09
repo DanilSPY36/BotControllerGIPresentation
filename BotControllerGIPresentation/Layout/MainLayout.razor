@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
 
+@inject ISessionStorageGenericService<SpotsDim> SessionStorageSpotDimService;
 @inject SelectedSpotStateService selectedSpotService;
 @inject IUserSpotsService UsersSpotService;
 
@@ -31,7 +32,7 @@
                                             <RadzenButton Text="@item.Spot?.SpotName" Value="@item.Spot?.Id.ToString()" Style="width:100%;" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Size="ButtonSize.Small"
                                             MouseEnter="args => ShowTooltipNotSelectedSpotButton(args)" 
                                             MouseLeave="()=> tooltipService.Close()"
-                                                          Click="() => OnGoToTheSpotPage(item)" />
+                                            Click="() => OnGoToTheSpotPage(item)" />
 
                                             <RadzenCheckBox @bind-Value="item.isSelect" TValue="bool" Change="args => OnSelectedSpotChange(args, item)" Style="margin-right: 12px;"
                                             MouseEnter="args => ShowTooltipNotSelectedSpotCheckBox(args)"
@@ -130,7 +131,22 @@
         var state = await AuthStateProvider.GetAuthenticationStateAsync();
         AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
         selectedSpotService.PropertyChanged += OnListUsersSpotsChanged!;
-
+        if (UserSpotsList is not null && UserSpotsList.Count() == 0)
+        {
+            if (AuthUserDTO is not null)
+            {
+                UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+                if (UserSpotsList is not null && UserSpotsList.Count() != 0)
+                {
+                    var firstSpot = UserSpotsList.FirstOrDefault()?.Spot;
+                    if (firstSpot is not null)
+                    {
+                        selectedSpotService.UsersSpots = UserSpotsList.ToList();
+                    }
+                }
+            }
+            StateHasChanged();
+        }
     }
     private void OnListUsersSpotsChanged(object obj, System.ComponentModel.PropertyChangedEventArgs e)
     {
@@ -231,13 +247,15 @@
     }
     #endregion
 
-    private void OnSpotHeaderButtonCLick()
+    private async Task OnSpotHeaderButtonCLick()
     {
-
+        await SessionStorageSpotDimService.SetNewItemInSessionStorage(jsRuntime, SelectedSpot);
+        NavigationManager.NavigateTo($"/SpotPage?spotId={SelectedSpot?.Id}", true);
     }
-    private void OnGoToTheSpotPage(UsersSpot spotInList)
+    private async Task OnGoToTheSpotPage(UsersSpot spotInList)
     {
-
+        await SessionStorageSpotDimService.SetNewItemInSessionStorage(jsRuntime, spotInList.Spot);
+        NavigationManager.NavigateTo($"/SpotPage?spotId={spotInList.Spot?.Id}", true);
     }
 
     #region toolTips

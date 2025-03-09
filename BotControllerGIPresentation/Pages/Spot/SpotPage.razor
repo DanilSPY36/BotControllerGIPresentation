@@ -1,0 +1,18 @@
+﻿@page "/SpotPage"
+
+@inject ISessionStorageGenericService<SpotsDim> SessionStorageSpotDimService;
+
+<h3>SpotPage @mainSpot?.SpotName</h3>
+
+@code {
+    private bool showWait = true;
+
+    [Parameter]
+    public SpotsDim? mainSpot { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var spotId = NavigationManager.GetUriWithQueryParameter("spotId", true);
+        mainSpot = await SessionStorageSpotDimService.GetItemFromSessionStorage(jsRuntime, mainSpot);
+    }
+}
