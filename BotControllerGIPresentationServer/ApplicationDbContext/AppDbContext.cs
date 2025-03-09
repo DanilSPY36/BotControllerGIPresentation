@@ -467,6 +467,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.FullAdress)
                 .HasColumnType("character varying")
                 .HasColumnName("full_adress");
+            entity.Property(e => e.ImagePath)
+                .HasColumnType("character varying")
+                .HasColumnName("image_path");
         });
 
         modelBuilder.Entity<Ttk>(entity =>
@@ -554,9 +557,6 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.TgUserId).HasColumnName("tg_user_id");
 
-            entity.HasOne(d => d.MainSpot).WithMany(p => p.Users)
-                .HasForeignKey(d => d.MainSpotId)
-                .HasConstraintName("users_spots_dim_fk");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

@@ -1,4 +1,7 @@
-﻿using Microsoft.JSInterop;
+﻿using BotControllerGIPresentation.IServices.IUserServices;
+using BotControllerGIPresentation.Services.UserServices;
+using Microsoft.JSInterop;
+using SharedLibrary.DataTransferObjects;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -55,6 +58,36 @@ namespace BotControllerGIPresentation
             NotifyAuthenticationStateChanged(Task.FromResult(state));
 
             return state;
+        }
+
+        public async Task<UserDTO> GetUserDtoFromAuthenticationStateProvider(IUserService userService) 
+        {
+            var state = await GetAuthenticationStateAsync();
+            if (state is not null && state.User.Identity is not null)
+            {
+                if (state.User.Identity.IsAuthenticated)
+                {
+                    var userIdstr = state.User.FindFirst("userId")?.Value;
+                    int.TryParse(userIdstr, out int userId);
+                    var AuthUserDTO = await userService.GetUserDTOByUserId(userId);
+                    if (AuthUserDTO is not null)
+                    {
+                        return AuthUserDTO;
+                    }
+                    else
+                    {
+                        return null!;
+                    }
+                }
+                else
+                {
+                    return null!;
+                }
+            }
+            else 
+            {
+                return null!;
+            }
         }
 
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

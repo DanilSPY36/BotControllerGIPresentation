@@ -1,8 +1,7 @@
 ﻿@page "/MySpotsPage"
 @inject ISpotsDimService SpotsDimService;
 @inject IUserSpotsService UsersSpotService;
-
-
+@inject SelectedSpotStateService selectedSpotService;
 @if (showWait)
 {
     <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
@@ -10,10 +9,40 @@
 }
 else
 {
+    // если у пользователя есть заведения
     if (!spotsIsNullOrEmpty)
     {
+        // если завденеий несколько то показываем карусеь выбора заведений или карточки заведений с краткой информацией 
+        if (UserSpotsList?.Count() > 1)
+        {
+            <RadzenStack AlignItems="AlignItems.Center" Wrap="Radzen.FlexWrap.Wrap"  Gap="25px" Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Style="width: 100%">
+                @foreach (var spot in UserSpotsList)
+                {
+                    <RadzenCard Style="width: 49%; min-width: 200px; background: var(--rz-primary-light) no-repeat 50% 70% fixed url('/images/SelectedSpotBackGroudCard2.svg')" class="rz-border-radius-6 rz-shadow-10 ">
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" Gap="10" >
+                            <RadzenImage AlternateText="" Path="images/EmptySpotPhotoWithoutImageBackGroundWhite.png" Style="width: 100px; height: 100px;" />
+                            <RadzenStack Gap="0">
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Название</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@(spot.Spot?.SpotName)</b></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Адрес</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@(spot.Spot?.FullAdress)</b></RadzenText>
+                            </RadzenStack>
+                            <RadzenStack Gap="0">
+                                <RadzenButton Icon="info" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined"></RadzenButton>
+                                        <RadzenButton Icon="brightness_empty" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="() => selectedSpotService.SelectedSpotName = spot.Spot?.SpotName"></RadzenButton>
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenCard>
+                }
+            </RadzenStack>
+        }
+        // если заведение только одно показываем только это заведение 
+        else
+        {
 
+        }
     }
+    // если у пользователя нет заведений показываем страницу регистрации заведения 
     else
     {
 
@@ -85,7 +114,11 @@ else
     }
 }
 
+@* 
 
+award_star 
+brightness_empty
+*@
 
 
 @code 
@@ -112,32 +145,28 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthStateProvider.GetAuthenticationStateAsync(); 
-        if(state is not null)
+
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+        if (AuthUserDTO is not null)
         {
-            if(state.User.Identity is not null)
+            UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+            if (UserSpotsList is null || UserSpotsList.Count() == 0)
             {
-                if (state.User.Identity.IsAuthenticated)
-                {
-                    var userIdstr = state.User.FindFirst("userId")?.Value;
-                    int.TryParse(userIdstr, out int userId);
-                    AuthUserDTO = await UserService.GetUserDTOByUserId(userId);
-                    if(AuthUserDTO is not null)
-                    {
-                        UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
-                        if(UserSpotsList is null || UserSpotsList.Count() == 0)
-                        {
-                            spotsIsNullOrEmpty = true;
-                        }
-                        else
-                        {
-                            spotsIsNullOrEmpty = false;
-                        }
-                    }
-                }
+                spotsIsNullOrEmpty = true;
+            }
+            else
+            {
+                spotsIsNullOrEmpty = false;
             }
         }
         showWait = false;
+    }
+
+    private void OnSelectedSpotChange(string? spotName)
+    {
+        selectedSpotService.SelectedSpotName = spotName!;
+        StateHasChanged();
     }
     private async void Submit()
     {
@@ -189,6 +218,5 @@ else
         }
 
     }
-
 
 }

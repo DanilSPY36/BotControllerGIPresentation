@@ -30,7 +30,15 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
                     RoleId = UserFromDb.RoleId,
                     FirstName = UserFromDb.FirstName!,
                     LastName = UserFromDb.LastName!,
-                    UsersSpots = UserFromDb.UsersSpots,
+                    UsersSpots = await _context.UsersSpots
+                .Where(x => x.UserId == UserFromDb.Id)
+                .Select(x => new UsersSpot()
+                {
+                    Id = x.Id,
+                    Spotid = x.Spotid, 
+                    Spot = x.Spot
+                })
+                .ToListAsync(),
                     HrPositionId = UserFromDb.HrPositionId,
                     HrPosition = await _context.HrPositions.Where(x => x.Id == UserFromDb.HrPositionId).FirstOrDefaultAsync(),
                 };

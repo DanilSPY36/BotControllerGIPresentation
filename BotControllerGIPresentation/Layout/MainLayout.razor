@@ -1,6 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
 
+@inject SelectedSpotStateService selectedSpotService;
+@inject IUserSpotsService UsersSpotService;
+
+<RadzenTooltip/>
 <HeadContent>
     <RadzenTheme Theme="material" />
 </HeadContent>
@@ -10,9 +14,40 @@
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
             <AuthorizeView>
                 <Authorized>
-                    <RadzenStack Style="height 100%; background: var(--rz-primary-light) no-repeat url('/images/UserSVGRightSide.svg')">
+                    <RadzenStack Style="height 100%; background: var(--rz-primary-light) no-repeat url('/images/UserSVGRightSide.svg');" Orientation="Orientation.Horizontal">
                         <RadzenSidebarToggle Style="height 100%; color:white" class="sidebar-toggle" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
                     </RadzenStack>
+
+                    <RadzenStack Style="max-height: 100%;" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                        @if (UserSpotsList is not null && UserSpotsList.Count() > 1)
+                        {
+                            <RadzenSplitButton Click=@(args => OnSpotHeaderButtonCLick(args, "SplitButton with text and icon")) Text="@SelectedSpot?.SpotName" Icon="deck"
+                                               Size="ButtonSize.Small" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"
+                                               MouseEnter="args => ShowTooltipSelectedSpotMainButton(args)" MouseLeave="() => tooltipService.Close()">
+                                <ChildContent>
+                                    @foreach (var item in UserSpotsList)
+                                    {
+                                        <RadzenStack Orientation="Orientation.Horizontal"  JustifyContent="JustifyContent.SpaceBetween"AlignItems="AlignItems.Center">
+                                            <RadzenButton Text="@item.Spot?.SpotName" Value="@item.Spot?.Id.ToString()" Style="width:100%;" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Size="ButtonSize.Small"
+                                                                   MouseEnter="args => ShowTooltipNotSelectedSpotButton(args)" 
+                                                                   MouseLeave="()=> tooltipService.Close()"/>
+
+                                            <RadzenCheckBox TValue="bool" Change="args => OnSelectedSpotChange(args, item)" Style="margin-right: 12px;"
+                                                            MouseEnter="args => ShowTooltipNotSelectedSpotCheckBox(args)"
+                                                            MouseLeave="()=> tooltipService.Close()"></RadzenCheckBox>
+                                        </RadzenStack>
+                                    }
+
+                                </ChildContent>
+                            </RadzenSplitButton>
+                        }
+                        else if (UserSpotsList is not null && UserSpotsList.Count() == 1)
+                        {
+                            <RadzenButton Text="@UserSpotsList.First()?.Spot?.SpotName" Click="OnGoToTheMainSpotPage" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"></RadzenButton>
+                        }
+                    </RadzenStack>
+
+
                     <RadzenProfileMenu Style="background: var(--rz-primary-light) no-repeat url('/images/UserSVGv2.svg')">
                         <Template>
                             <RadzenImage Path="images/notFoundUser.png" Style="width: 40px; height: 40px;" class="rz-border-radius-10" />
@@ -28,6 +63,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <RadzenLabel Text="GrapeIntegration" Style="color:black;" />
+                    <RadzenButton Text="go like admin" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Click="GoLikeAdmin"></RadzenButton>
                     <RadzenProfileMenu Style="background: var(--rz-primary-light) no-repeat url('/images/UserSVGv2.svg')">
                         <Template>
                             <RadzenImage Path="images/notFoundUser.png" class="rz-border-radius-10" Style="width: 40px; height: 40px;" />
@@ -46,9 +82,13 @@
     </RadzenHeader>
     <AuthorizeView>
         <Authorized>
-            <RadzenSidebar @bind-Expanded="@sidebar1Expanded" Style="width: 200px;">
-                <RadzenPanelMenu>
-                    <RadzenPanelMenuItem Text="Мои заведения" Icon="deck" Path="/MySpotsPage" />
+            <RadzenSidebar Responsive="false" Style="width: max-content">
+                <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="true">
+                    <RadzenPanelMenuItem Text="Мои заведения" Icon="deck" Path="/MySpotsPage" Click="OnPaneMenuClick">
+                        <RadzenPanelMenuItem Text="Buttons" Path="buttons" Icon="account_circle"></RadzenPanelMenuItem>
+                        <RadzenPanelMenuItem Text="Menu" Path="menu" Icon="line_weight"></RadzenPanelMenuItem>
+                        <RadzenPanelMenuItem Text="FileInput" Path="fileinput" Icon="attach_file"></RadzenPanelMenuItem>
+                    </RadzenPanelMenuItem>
                     <RadzenPanelMenuItem Text="Мои сотрудники" Icon="diversity_1" Path="/MyEmployeesPage" />
                     <RadzenPanelMenuItem Text="Меню" Icon="menu_book" Path="/ttkTable" />
                     <RadzenPanelMenuItem Text="Мои поставщики" Icon="local_shipping" Path="/MyShippersPage" />
@@ -65,31 +105,91 @@
 
 <style>
     .sidebar-toggle {
-        height: 100%;
-        color: white;
-        transition: color 0.5s, opacity 0.5s; /* Плавный переход */
+    height: 100%;
+    color: white;
+    transition: color 0.5s, opacity 0.5s; /* Плавный переход */
     }
 
-        .sidebar-toggle:hover {
-            color: rgba(255, 255, 255, 0.7); /* Измените цвет и прозрачность */
-            background-color: rgba(0, 0, 0, 0); /* Пример фона при наведении */
-        }
+    .sidebar-toggle:hover 
+    {
+    color: rgba(255, 255, 255, 0.7); /* Измените цвет и прозрачность */
+    background-color: rgba(0, 0, 0, 0); /* Пример фона при наведении */
+    }
 </style>
 
-@code {
-    private UserLoginDto? userLoginDto { get; set; }
-    bool sidebar1Expanded = true;
+@code 
+{
+    private UserDTO? AuthUserDTO { get; set; } = new();
+    private bool sidebar1Expanded = true;
+    private IEnumerable<UsersSpot>? UserSpotsList = new List<UsersSpot>();
+    private SpotsDim? SelectedSpot { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+        selectedSpotService.PropertyChanged += OnListUsersSpotsChanged!;
+
+    }
+    private void OnListUsersSpotsChanged(object obj, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(selectedSpotService.UsersSpots))
+        {
+            UserSpotsList = selectedSpotService.UsersSpots;
+            if(UserSpotsList is not null)
+            {
+                SelectedSpot = UserSpotsList.FirstOrDefault()?.Spot;
+            }
+            StateHasChanged();
+        }
+    }
+    private async Task OnSelectedSpotChange(bool args, UsersSpot selectecUserSpot)
+    {
+        var x = args;
+    }
 
 
+    private async Task OnPaneMenuClick()
+    {
+        if(AuthUserDTO is null)
+        {
+            AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+        }
+    }
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    // }
 
+    private async Task GoLikeAdmin()
+    {
+        UserLoginDto LoginUser = new()
+            {
+                Password = "1234qwer",
+                Email = "admin"
+            };
+        var res = await UserService.Login(LoginUser);
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+        if (AuthUserDTO is not null)
+        {
+            var UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+            if (UserSpotsList is not null && UserSpotsList.Count() != 0)
+            {
+                var firstSpot = UserSpotsList.FirstOrDefault()?.Spot;
+                if (firstSpot is not null)
+                {
+                    selectedSpotService.UsersSpots = UserSpotsList.ToList();
+                }
+            }
+        }
+        StateHasChanged();
+        NavigationManager.NavigateTo("/", false);
+    }
+
+    #region Navigation UserPanelMenu
     private void OnLogin()
     {
         NavigationManager.NavigateTo("/login", false);
     }
+
     private void OnRegister()
     {
         NavigationManager.NavigateTo("/signup", false);
@@ -113,4 +213,21 @@
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/", false);
     }
+    #endregion
+
+    private void OnSpotHeaderButtonCLick(RadzenSplitButtonItem item, string buttonName)
+    {
+
+    }
+    private void OnGoToTheMainSpotPage()
+    {
+
+    }
+
+    #region toolTips
+    private void ShowTooltipSelectedSpotMainButton(ElementReference elementReference, TooltipOptions options = null!) => tooltipService.Open(elementReference, "Выбран как основное заведение для работы", new TooltipOptions() { Position = TooltipPosition.Right, Delay = 500, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" });
+    private void ShowTooltipNotSelectedSpotCheckBox(ElementReference elementReference, TooltipOptions options = null!) => tooltipService.Open(elementReference, "Сделать основным заведеним для работы", new TooltipOptions() { Position = TooltipPosition.Right, Delay = 500, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" });
+    private void ShowTooltipNotSelectedSpotButton(ElementReference elementReference, TooltipOptions options = null!) => tooltipService.Open(elementReference, "Перейти к странице заведения", new TooltipOptions() { Position = TooltipPosition.Right, Delay = 500, Style = "background: var(--rz-base-300); color: var(--rz-text-color)" });
+
+    #endregion
 }

@@ -1,5 +1,8 @@
 ﻿@page "/login"
 
+@inject IUserSpotsService UsersSpotService;
+@inject SelectedSpotStateService selectedSpotService;
+
 <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height: 80vh; width: 100%">
     <RadzenCard Style="width: 500px;">
         <RadzenFieldset Text="Данные аккаунта">
@@ -37,7 +40,6 @@
 @code 
 {
     private UserLoginDto LoginUser { get; set; } = new();
-
     private string passwordValue { get; set; } = string.Empty;
     private bool passwordVisable { get; set; } = true;
     private bool alertVisible { get; set; } = false;
@@ -63,7 +65,21 @@
         {
             submitButtonIsBusy = false;
             alertVisible = false;
-            await AuthStateProvider.GetAuthenticationStateAsync();
+            var state = await AuthStateProvider.GetAuthenticationStateAsync();
+            var AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+            if (AuthUserDTO is not null)
+            {
+                var UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+                if(UserSpotsList is not null && UserSpotsList.Count() != 0)
+                {
+                    var firstSpot = UserSpotsList.FirstOrDefault()?.Spot;
+                    if(firstSpot is not null)
+                    {
+                        selectedSpotService.UsersSpots = UserSpotsList.ToList();
+                    }
+                }
+            }
+            StateHasChanged();
             NavigationManager.NavigateTo("/", false);
         } 
         else
@@ -71,7 +87,6 @@
             submitButtonIsBusy = false;
             alertVisible = true;
         }
-        StateHasChanged();
         
     }
 }

@@ -26,7 +26,10 @@ builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredSessionStorage(config => config.JsonSerializerOptions.WriteIndented = true);
 
+builder.Services.AddSingleton<SelectedSpotStateService>();
+
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<NotificationMessage>();
 builder.Services.AddScoped<TooltipService>();

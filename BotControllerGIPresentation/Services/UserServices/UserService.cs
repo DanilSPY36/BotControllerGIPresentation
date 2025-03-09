@@ -2,16 +2,36 @@
 using BotControllerGIPresentation.IServices.IUserServices;
 using SharedLibrary.DataTransferObjects;
 using SharedLibrary.Models;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace BotControllerGIPresentation.Services.UserServices
 {
-    public class UserService : GenericService<User>, IUserService
+    public class UserService : GenericService<User>, IUserService, INotifyPropertyChanged
     { 
+        private UserDTO? UserDTO { get; set; } = new UserDTO();
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public UserDTO? UserDto
+        {
+            get => UserDTO;
+            set
+            {
+                if (UserDTO != value)
+                {
+                    UserDTO = value;
+                    OnPropertyChanged(nameof(UserDTO));
+                }
+            }
+        }
         public UserService(HttpClient httpClient) : base(httpClient)
         {
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public async Task<User> GetByEmail(string email)
@@ -43,10 +63,10 @@ namespace BotControllerGIPresentation.Services.UserServices
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                var user = JsonSerializer.Deserialize<UserDTO>(jsonResponse);
-                if (user != null)
+                UserDTO = JsonSerializer.Deserialize<UserDTO>(jsonResponse);
+                if (UserDTO != null)
                 {
-                    return user;
+                    return UserDTO;
                 }
                 else
                 {
