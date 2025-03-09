@@ -72,9 +72,10 @@
                 var UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
                 if(UserSpotsList is not null && UserSpotsList.Count() != 0)
                 {
-                    var firstSpot = UserSpotsList.FirstOrDefault()?.Spot;
-                    if(firstSpot is not null)
+                    var firstSpot = UserSpotsList.FirstOrDefault();
+                    if (firstSpot is not null)
                     {
+                        firstSpot.isSelect = true;
                         selectedSpotService.UsersSpots = UserSpotsList.ToList();
                     }
                 }

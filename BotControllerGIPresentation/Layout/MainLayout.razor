@@ -21,20 +21,21 @@
                     <RadzenStack Style="max-height: 100%;" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
                         @if (UserSpotsList is not null && UserSpotsList.Count() > 1)
                         {
-                            <RadzenSplitButton Click=@(args => OnSpotHeaderButtonCLick(args, "SplitButton with text and icon")) Text="@SelectedSpot?.SpotName" Icon="deck"
-                                               Size="ButtonSize.Small" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"
-                                               MouseEnter="args => ShowTooltipSelectedSpotMainButton(args)" MouseLeave="() => tooltipService.Close()">
+                            <RadzenSplitButton Click=@(() => OnSpotHeaderButtonCLick()) Text="@SelectedSpot?.SpotName" Icon="deck"
+                            Size="ButtonSize.Small" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"
+                            MouseEnter="args => ShowTooltipSelectedSpotMainButton(args)" MouseLeave="() => tooltipService.Close()">
                                 <ChildContent>
                                     @foreach (var item in UserSpotsList)
                                     {
                                         <RadzenStack Orientation="Orientation.Horizontal"  JustifyContent="JustifyContent.SpaceBetween"AlignItems="AlignItems.Center">
                                             <RadzenButton Text="@item.Spot?.SpotName" Value="@item.Spot?.Id.ToString()" Style="width:100%;" ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Size="ButtonSize.Small"
-                                                                   MouseEnter="args => ShowTooltipNotSelectedSpotButton(args)" 
-                                                                   MouseLeave="()=> tooltipService.Close()"/>
+                                            MouseEnter="args => ShowTooltipNotSelectedSpotButton(args)" 
+                                            MouseLeave="()=> tooltipService.Close()"
+                                                          Click="() => OnGoToTheSpotPage(item)" />
 
-                                            <RadzenCheckBox TValue="bool" Change="args => OnSelectedSpotChange(args, item)" Style="margin-right: 12px;"
-                                                            MouseEnter="args => ShowTooltipNotSelectedSpotCheckBox(args)"
-                                                            MouseLeave="()=> tooltipService.Close()"></RadzenCheckBox>
+                                            <RadzenCheckBox @bind-Value="item.isSelect" TValue="bool" Change="args => OnSelectedSpotChange(args, item)" Style="margin-right: 12px;"
+                                            MouseEnter="args => ShowTooltipNotSelectedSpotCheckBox(args)"
+                                            MouseLeave="()=> tooltipService.Close()"></RadzenCheckBox>
                                         </RadzenStack>
                                     }
 
@@ -43,7 +44,7 @@
                         }
                         else if (UserSpotsList is not null && UserSpotsList.Count() == 1)
                         {
-                            <RadzenButton Text="@UserSpotsList.First()?.Spot?.SpotName" Click="OnGoToTheMainSpotPage" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"></RadzenButton>
+                            <RadzenButton Text="@UserSpotsList.First()?.Spot?.SpotName" Click="OnSpotHeaderButtonCLick" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Dark"></RadzenButton>
                         }
                     </RadzenStack>
 
@@ -138,14 +139,29 @@
             UserSpotsList = selectedSpotService.UsersSpots;
             if(UserSpotsList is not null)
             {
-                SelectedSpot = UserSpotsList.FirstOrDefault()?.Spot;
+                var firstSpot = UserSpotsList.FirstOrDefault();
+                if(firstSpot is not null)
+                {
+                    firstSpot.isSelect = true;
+                    SelectedSpot = firstSpot.Spot;
+
+                }
             }
             StateHasChanged();
         }
     }
-    private async Task OnSelectedSpotChange(bool args, UsersSpot selectecUserSpot)
+    private void OnSelectedSpotChange(bool args, UsersSpot selectecUserSpot)
     {
-        var x = args;
+        foreach (var item in UserSpotsList!)
+        {
+            if (item.isSelect == true)
+            {
+                item.isSelect = false;
+            }
+        }
+        selectecUserSpot.isSelect = true;
+        SelectedSpot = null;
+        SelectedSpot = selectecUserSpot.Spot;
     }
 
 
@@ -215,11 +231,11 @@
     }
     #endregion
 
-    private void OnSpotHeaderButtonCLick(RadzenSplitButtonItem item, string buttonName)
+    private void OnSpotHeaderButtonCLick()
     {
 
     }
-    private void OnGoToTheMainSpotPage()
+    private void OnGoToTheSpotPage(UsersSpot spotInList)
     {
 
     }
