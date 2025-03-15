@@ -5,5 +5,6 @@ namespace BotControllerGIPresentationServer.IRepositories.UserIRepository
 {
     public interface IHotcoffeeRepository : IGenericRepository<Hotcoffee>
     {
+        public Task<Hotcoffee> GetHotCoffeeByUserId(int userId);
     }
 }

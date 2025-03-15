@@ -1,6 +1,9 @@
 ﻿@page "/login"
 @using System.Security.Cryptography;
 @inject IUserSpotsService UsersSpotService;
+@inject ILocalStorageGenericService<string> LocalStorageServiceTest;
+
+@inject IHotCoffeeMaker<SpotsDim> HotCoffeForUserLogin;
 @inject SelectedSpotStateService selectedSpotService;
 
 <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height: 80vh; width: 100%">
@@ -63,12 +66,33 @@
         var res = await UserService.Login(LoginUser);
         if(!string.IsNullOrEmpty(res))
         {
+
+
+
+
             submitButtonIsBusy = false;
             alertVisible = false;
             var state = await AuthStateProvider.GetAuthenticationStateAsync();
             var AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
             if (AuthUserDTO is not null)
             {
+                LoginUser.Id = AuthUserDTO.id;
+                var setUserKey = await HotCoffeForUserLogin.SetHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, LoginUser);
+
+
+                var asdf = new SpotsDim()
+                    {
+                        SpotName = "qwre",
+                        Id = 1234,
+                        FullAdress = "asfdasfs"
+                    };
+                var result = await HotCoffeForUserLogin.MakeHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
+
+                var decrypt = await HotCoffeForUserLogin.MakeColdCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
+
+               
+                
+
                 var UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
                 if(UserSpotsList is not null && UserSpotsList.Count() != 0)
                 {

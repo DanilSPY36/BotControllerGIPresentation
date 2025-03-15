@@ -34,6 +34,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<HrpositionSpot> HrpositionSpots { get; set; }
 
+    public virtual DbSet<Hotcoffee> Hotcoffees { get; set; }
+
     public virtual DbSet<Item> Items { get; set; }
 
     public virtual DbSet<KbjuTtk> KbjuTtks { get; set; }

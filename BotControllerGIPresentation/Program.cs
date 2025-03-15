@@ -106,7 +106,10 @@ builder.Services.AddHttpClient<IGenericService<KbjuTtk>, GenericService<KbjuTtk>
 
 
 #region Storages Uploads services
+builder.Services.AddScoped(typeof(IHotCoffeeMaker<>), typeof(HotCoffeeMaker<>));
 builder.Services.AddScoped(typeof(ISessionStorageGenericService<>), typeof(SessionStorageGenericService<>));
+builder.Services.AddScoped(typeof(ILocalStorageGenericService<>), typeof(LocalStorageGenericService<>));
+
 
 builder.Services.AddHttpClient<ISessionStorageGenericService<Ttk>, SessionStorageGenericService<Ttk>>(client =>
 {

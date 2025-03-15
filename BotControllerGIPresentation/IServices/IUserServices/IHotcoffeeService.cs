@@ -3,7 +3,8 @@ using SharedLibrary.Models;
 
 namespace BotControllerGIPresentation.IServices.IUserServices
 {
-    public interface IHotcoffeeService : IGenericService<Hotcoffee>
+    public interface IHotcoffeeService : IGenericService<Hotcoffee> 
     {
+        public Task<Hotcoffee> GetHotCoffeeByUserId(int userId); 
     }
 }

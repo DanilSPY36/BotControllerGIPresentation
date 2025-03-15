@@ -30,6 +30,34 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
                 return BadRequest();
             }
         }
+        [HttpGet("GetById/{itemId:int}")]
+        public async Task<ActionResult<Hotcoffee>> GetById(int itemId) 
+        {
+            var item = await _repository.GetByIDAsync(itemId);
+            if(item is not null) 
+            {
+                return Ok(item);
+            }
+            else 
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("GetHotCoffeeByUserId/{userId:int}")]
+        public async Task<ActionResult<Hotcoffee>> GetHotCoffeeByUserId(int userId) 
+        {
+            var result = await _repository.GetHotCoffeeByUserId(userId);
+            if (result is not null) 
+            {
+                return Ok(result);
+            }
+            else 
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("Add")]
         public async Task<ActionResult<Hotcoffee>> Add(Hotcoffee item)
         {
