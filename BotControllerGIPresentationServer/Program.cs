@@ -22,8 +22,7 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 #pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
-builder.Services.AddApiAuthentication(configuration: builder.Services.BuildServiceProvider()
-                                                                     .GetRequiredService<IOptions<JwtOptions>>());
+builder.Services.AddApiAuthentication(configuration: builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
 #pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
@@ -45,7 +44,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IUsersSpotRepository, UserSpotsRepository>();
 builder.Services.AddScoped<ISpotsDimRepository, SpotsDimRepository>();
 
-
+builder.Services.AddScoped<IHotcoffeeRepository, HotcoffeeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<ICategoriesDimRepository, CategoriesDimRepository>();

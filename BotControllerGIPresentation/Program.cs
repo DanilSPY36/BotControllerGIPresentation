@@ -51,6 +51,10 @@ builder.Services.AddHttpClient<ISpotsDimService, SpotsDimService>(client =>
 });
 
 
+builder.Services.AddHttpClient<IHotcoffeeService, HotcoffeeService>(client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
 builder.Services.AddHttpClient<IUserService, UserService>(client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
