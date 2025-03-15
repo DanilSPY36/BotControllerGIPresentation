@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
 
+@inject ISessionStorageGenericService<string> SessionStorageCryptoResultService;
+
 @inject ISessionStorageGenericService<SpotsDim> SessionStorageSpotDimService;
 @inject SelectedSpotStateService selectedSpotService;
 @inject IUserSpotsService UsersSpotService;
@@ -192,11 +194,19 @@
 
     private async Task GoLikeAdmin()
     {
+
         UserLoginDto LoginUser = new()
             {
                 Password = "1234qwer",
                 Email = "admin"
             };
+        var encryptedCacheData = await Crypto.EncryptAsync(LoginUser);
+        await SessionStorageCryptoResultService.SetNewItemInSessionStorage(jsRuntime, encryptedCacheData.Value);
+
+        var newCashData = new CryptoResult();
+        var encryptedDataFromStorage = await SessionStorageCryptoResultService.GetItemFromSessionStorage(jsRuntime, newCashData.Value);
+        string decrypted = await Crypto.DecryptAsync(encryptedDataFromStorage);
+
         var res = await UserService.Login(LoginUser);
         var state = await AuthStateProvider.GetAuthenticationStateAsync();
         var AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);

@@ -28,8 +28,11 @@ public partial class User
     public string Passwordhash { get; set; } = null!;
 
     public string Email { get; set; } = null!;
-    public int? HrPositionId {  get; set; }
-    
+
+    public int? HrPositionId { get; set; }
+
+    public virtual ICollection<Hotcoffee> Hotcoffees { get; set; } = new List<Hotcoffee>();
+
     public virtual HrPosition? HrPosition { get; set; }
 
     public virtual SpotsDim? MainSpot { get; set; }
@@ -37,5 +40,4 @@ public partial class User
     public virtual RolesDim? Role { get; set; }
 
     public virtual ICollection<UsersSpot> UsersSpots { get; set; } = new List<UsersSpot>();
-
 }

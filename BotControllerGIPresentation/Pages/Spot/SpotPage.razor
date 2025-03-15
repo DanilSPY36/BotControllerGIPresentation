@@ -2,6 +2,15 @@
 
 @inject ISessionStorageGenericService<SpotsDim> SessionStorageSpotDimService;
 
+
+@if(showWait)
+{
+
+}
+else
+{
+
+}
 <h3>SpotPage @mainSpot?.SpotName</h3>
 
 @code {
@@ -14,5 +23,6 @@
     {
         var spotId = NavigationManager.GetUriWithQueryParameter("spotId", true);
         mainSpot = await SessionStorageSpotDimService.GetItemFromSessionStorage(jsRuntime, mainSpot);
+        showWait = false;
     }
 }

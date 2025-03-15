@@ -172,6 +172,24 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("hrposition_spots_spotid_fkey");
         });
+        modelBuilder.Entity<Hotcoffee>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("hotcoffee_pk");
+
+            entity.ToTable("hotcoffee", "user_prod");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(e => e.CoffeeName)
+                .HasColumnType("character varying")
+                .HasColumnName("coffee_name");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Hotcoffees)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("hotcoffee_users_fk");
+        });
 
         modelBuilder.Entity<Item>(entity =>
         {

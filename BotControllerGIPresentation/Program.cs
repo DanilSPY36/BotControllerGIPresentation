@@ -1,4 +1,5 @@
 global using Microsoft.AspNetCore.Components.Authorization;
+using Blazor.SubtleCrypto;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using BotControllerGIPresentation;
@@ -37,6 +38,7 @@ builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 
+builder.Services.AddSubtleCrypto();
 
 
 builder.Services.AddHttpClient<IUserSpotsService, UsersSpotService>(client =>
