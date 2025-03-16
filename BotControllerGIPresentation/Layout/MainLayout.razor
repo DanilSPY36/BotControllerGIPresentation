@@ -8,7 +8,11 @@
 @inject IUserSpotsService UsersSpotService;
 
 @inject ILocalStorageGenericService<UserDTO> UserDtoLocalStorageService;
-@inject IHotCoffeeMaker<UserDTO> HotCoffeeMaker;
+
+@inject ILocalStorageGenericService<string> LocalStorageServiceTest;
+
+@inject IHotCoffeeMaker<IEnumerable<UsersSpot>> HotCoffeForUserSpots;
+@inject IHotCoffeeMaker<UserDTO> HotCoffeForUserDTO;
 
 
 <RadzenTooltip/>
@@ -134,6 +138,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+       
+
         var state = await AuthStateProvider.GetAuthenticationStateAsync();
         AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
         selectedSpotService.PropertyChanged += OnListUsersSpotsChanged!;
@@ -201,15 +207,12 @@
 
         UserLoginDto LoginUser = new()
             {
+                Id = 11,
                 Password = "1234qwer",
                 Email = "admin"
             };
-        var encryptedCacheData = await Crypto.EncryptAsync(LoginUser);
-        await SessionStorageCryptoResultService.SetNewItemInSessionStorage(jsRuntime, encryptedCacheData.Value);
-
-        var newCashData = new CryptoResult();
-        var encryptedDataFromStorage = await SessionStorageCryptoResultService.GetItemFromSessionStorage(jsRuntime, newCashData.Value);
-        string decrypted = await Crypto.DecryptAsync(encryptedDataFromStorage);
+        var setUserKey = await HotCoffeForUserDTO.SetHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, LoginUser);
+       
 
         var res = await UserService.Login(LoginUser);
         var state = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -224,7 +227,10 @@
                 {
                     selectedSpotService.UsersSpots = UserSpotsList.ToList();
                 }
+                await HotCoffeForUserSpots.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, UserSpotsList, AuthUserDTO.id, "UserSpotsList");
+
             }
+            await HotCoffeForUserDTO.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, AuthUserDTO, AuthUserDTO.id, "CoffeeDTO");
         }
         StateHasChanged();
         NavigationManager.NavigateTo("/", false);
@@ -258,7 +264,7 @@
         AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
         if(AuthUserDTO is not null)
         {
-            await HotCoffeeMaker.Clear(HotCoffeeService, UserDtoLocalStorageService, jsRuntime, AuthUserDTO);
+            await HotCoffeForUserDTO.Clear(HotCoffeeService, UserDtoLocalStorageService, jsRuntime, AuthUserDTO);
         }
         var result = await UserService.Logout();
         await AuthStateProvider.GetAuthenticationStateAsync();

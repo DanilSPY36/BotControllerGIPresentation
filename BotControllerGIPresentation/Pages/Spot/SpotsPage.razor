@@ -2,6 +2,9 @@
 @inject ISpotsDimService SpotsDimService;
 @inject IUserSpotsService UsersSpotService;
 @inject SelectedSpotStateService selectedSpotService;
+@inject IHotCoffeeMaker<IEnumerable<UsersSpot>> HotCoffeForUserSpots;
+@inject ILocalStorageGenericService<string> LocalStorageSpotsService;
+
 @if (showWait)
 {
     <RadzenText TextStyle="TextStyle.DisplayH3" TextAlign="TextAlign.Center" class="rz-color-base-400">Загрузка...</RadzenText>
@@ -149,7 +152,9 @@ brightness_empty
         AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
         if (AuthUserDTO is not null)
         {
-            UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
+            UserSpotsList = await HotCoffeForUserSpots.MakeColdCoffe(HotCoffeeService, LocalStorageSpotsService, jsRuntime, AuthUserDTO.id, "UserSpotsList");
+
+            //UserSpotsList = await UsersSpotService.GetUserSpotsByUserId(AuthUserDTO.id);
             if (UserSpotsList is null || UserSpotsList.Count() == 0)
             {
                 spotsIsNullOrEmpty = true;

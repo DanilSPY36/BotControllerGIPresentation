@@ -83,7 +83,7 @@ namespace BotControllerGIPresentation.GenericService
         /// <param name="userId"></param>
         /// <param name="keyName"></param>
         /// <returns></returns>
-        public async Task<Temp> MakeColdCoffe(IHotcoffeeService service, ICryptoService cryptoService, ILocalStorageGenericService<string> LocalStorageServiceTest, IJSRuntime jsRuntime, Temp item, int userId, string keyName = "hotCoffee")
+        public async Task<Temp> MakeColdCoffe(IHotcoffeeService service, ILocalStorageGenericService<string> LocalStorageServiceTest, IJSRuntime jsRuntime, int userId, string keyName = "hotCoffee")
         {
             try
             {
@@ -97,8 +97,8 @@ namespace BotControllerGIPresentation.GenericService
                     {
                         var key = await service.GetByIDAsync(id);
                         string modifiedString = infoFromStorage.Substring(0, index);
-
-                        var decryptedUser = await cryptoService.DecryptAsync(new CryptoInput { Value = modifiedString, Key = key.CoffeeName });
+                        var crypto = new CryptoService(jsRuntime, new CryptoOptions());
+                        var decryptedUser = await crypto.DecryptAsync(new CryptoInput { Value = modifiedString, Key = key.CoffeeName });
 
                         // Проверяем результат дешифрования
                         if (string.IsNullOrEmpty(decryptedUser))

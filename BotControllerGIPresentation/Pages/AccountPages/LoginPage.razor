@@ -3,7 +3,9 @@
 @inject IUserSpotsService UsersSpotService;
 @inject ILocalStorageGenericService<string> LocalStorageServiceTest;
 
-@inject IHotCoffeeMaker<SpotsDim> HotCoffeForUserLogin;
+@inject IHotCoffeeMaker<IEnumerable<UsersSpot>>  HotCoffeForUserSpots;
+@inject IHotCoffeeMaker<UserDTO> HotCoffeForUserDTO;
+
 @inject SelectedSpotStateService selectedSpotService;
 
 <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height: 80vh; width: 100%">
@@ -66,10 +68,6 @@
         var res = await UserService.Login(LoginUser);
         if(!string.IsNullOrEmpty(res))
         {
-
-
-
-
             submitButtonIsBusy = false;
             alertVisible = false;
             var state = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -77,18 +75,11 @@
             if (AuthUserDTO is not null)
             {
                 LoginUser.Id = AuthUserDTO.id;
-                var setUserKey = await HotCoffeForUserLogin.SetHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, LoginUser);
+                var setUserKey = await HotCoffeForUserDTO.SetHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, LoginUser);
 
 
-                var asdf = new SpotsDim()
-                    {
-                        SpotName = "qwre",
-                        Id = 1234,
-                        FullAdress = "asfdasfs"
-                    };
-                var result = await HotCoffeForUserLogin.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
 
-                var decrypt = await HotCoffeForUserLogin.MakeColdCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
+                //var decrypt = await HotCoffeForUserLogin.MakeColdCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
 
                
                 
@@ -102,7 +93,10 @@
                         firstSpot.isSelect = true;
                         selectedSpotService.UsersSpots = UserSpotsList.ToList();
                     }
+                    await HotCoffeForUserSpots.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, UserSpotsList, AuthUserDTO.id, "UserSpotsList");
+                    await HotCoffeForUserDTO.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, AuthUserDTO, AuthUserDTO.id, "CoffeeDTO");
                 }
+
             }
             StateHasChanged();
             NavigationManager.NavigateTo("/", false);
