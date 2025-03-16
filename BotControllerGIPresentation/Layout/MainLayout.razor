@@ -7,6 +7,7 @@
 @inject SelectedSpotStateService selectedSpotService;
 @inject IUserSpotsService UsersSpotService;
 
+@inject ILocalStorageGenericService<UserDTO> UserDtoLocalStorageService;
 @inject IHotCoffeeMaker<UserDTO> HotCoffeeMaker;
 
 
@@ -254,6 +255,11 @@
 
     private async Task OnLogoutClick()
     {
+        AuthUserDTO = await CustomAuthStateProvider.GetUserDtoFromAuthenticationStateProvider(UserService);
+        if(AuthUserDTO is not null)
+        {
+            await HotCoffeeMaker.Clear(HotCoffeeService, UserDtoLocalStorageService, jsRuntime, AuthUserDTO);
+        }
         var result = await UserService.Logout();
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/", false);

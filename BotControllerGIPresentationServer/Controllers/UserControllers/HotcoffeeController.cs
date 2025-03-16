@@ -81,6 +81,20 @@ namespace BotControllerGIPresentationServer.Controllers.UserControllers
                 return BadRequest();
             }
         }
+        [HttpDelete("DelAllItemsByUserId/{userId:int}")]
+        public async Task<ActionResult<bool>> DelAllItemsByUserId(int userId) 
+        {
+            var result = await _repository.DelAllItemsByUserId(userId);
+            if (result) 
+            {
+                return Ok(true);
+            }
+            else
+            {
+                return NotFound(false);
+            }
+        }
+
         [HttpPut("Update")]
         public async Task<ActionResult<Hotcoffee>> Update(Hotcoffee updatedItem)
         {

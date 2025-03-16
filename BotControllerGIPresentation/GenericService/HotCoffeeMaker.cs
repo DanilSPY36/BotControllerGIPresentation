@@ -51,7 +51,7 @@ namespace BotControllerGIPresentation.GenericService
         /// <param name="item"></param>
         /// <param name="keyName"></param>
         /// <returns></returns>
-        public async Task<bool> MakeHotCoffe(IHotcoffeeService service,ICryptoService cryptoService, ILocalStorageGenericService<string> LocalStorageServiceTest, IJSRuntime jsRuntime, Temp item, int userId, string keyName = "hotCoffee")
+        public async Task<bool> MakeHotCoffe(IHotcoffeeService service, ILocalStorageGenericService<string> LocalStorageServiceTest, IJSRuntime jsRuntime, Temp item, int userId, string keyName = "hotCoffee")
         {
             try
             {
@@ -72,6 +72,17 @@ namespace BotControllerGIPresentation.GenericService
             }
         }
 
+        /// <summary>
+        /// метод дешифрования объекта из localStrage
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="cryptoService"></param>
+        /// <param name="LocalStorageServiceTest"></param>
+        /// <param name="jsRuntime"></param>
+        /// <param name="item"></param>
+        /// <param name="userId"></param>
+        /// <param name="keyName"></param>
+        /// <returns></returns>
         public async Task<Temp> MakeColdCoffe(IHotcoffeeService service, ICryptoService cryptoService, ILocalStorageGenericService<string> LocalStorageServiceTest, IJSRuntime jsRuntime, Temp item, int userId, string keyName = "hotCoffee")
         {
             try
@@ -87,16 +98,13 @@ namespace BotControllerGIPresentation.GenericService
                         var key = await service.GetByIDAsync(id);
                         string modifiedString = infoFromStorage.Substring(0, index);
 
-                        // Логируем данные перед дешифрованием
-                        Console.WriteLine($"Дешифрование: {modifiedString} с ключом: {key.CoffeeName}");
-
                         var decryptedUser = await cryptoService.DecryptAsync(new CryptoInput { Value = modifiedString, Key = key.CoffeeName });
 
                         // Проверяем результат дешифрования
                         if (string.IsNullOrEmpty(decryptedUser))
                         {
                             Console.WriteLine("Дешифрование вернуло пустую строку.");
-                            return null;
+                            return null!;
                         }
 
                         var objectUserClass = JsonSerializer.Deserialize<Temp>(decryptedUser);
@@ -105,6 +113,7 @@ namespace BotControllerGIPresentation.GenericService
                         if (objectUserClass == null)
                         {
                             Console.WriteLine("Не удалось десериализовать объект Temp.");
+                            return null!;
                         }
 
                         return objectUserClass;
@@ -114,13 +123,18 @@ namespace BotControllerGIPresentation.GenericService
                         Console.WriteLine("Не удалось преобразовать id в число.");
                     }
                 }
-                return null;
+                return null!;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка: {ex.Message}");
-                return null;
+                return null!;
             }
+        }
+        public async Task Clear(IHotcoffeeService service, ILocalStorageGenericService<Temp> LocalStorageServiceTest, IJSRuntime jsRuntime, UserDTO authUserDto) 
+        {
+            await LocalStorageServiceTest.ClearLocalStorage(jsRuntime);
+            await service.DelAllItemsByUserId(authUserDto.id);
         }
     }
 }

@@ -11,6 +11,19 @@ namespace BotControllerGIPresentation.Services.UserServices
         {
         }
 
+        public async Task<bool> DelAllItemsByUserId(int userId)
+        {
+            var request = await _httpClient.DeleteAsync($"api/Hotcoffee/DelAllItemsByUserId/{userId}");
+            if (request.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<Hotcoffee> GetHotCoffeeByUserId(int userId) 
         {
             var request = await _httpClient.GetAsync($"api/Hotcoffee/GetHotCoffeeByUserId/{userId}");

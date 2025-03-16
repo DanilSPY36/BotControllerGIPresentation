@@ -9,5 +9,6 @@ namespace BotControllerGIPresentation.GenericService
         Task<Temp> GetItemFromLocalStorage(IJSRuntime jSRuntime, string key);
         Task DeleteItemFromLocalStorage(IJSRuntime jSRuntime, string key);
         Task<Temp> CreateDeepCopy(IJSRuntime jSRuntime, Temp item);
+        Task ClearLocalStorage(IJSRuntime jSRuntime);
     }
 }

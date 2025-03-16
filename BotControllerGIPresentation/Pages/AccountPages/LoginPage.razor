@@ -86,7 +86,7 @@
                         Id = 1234,
                         FullAdress = "asfdasfs"
                     };
-                var result = await HotCoffeForUserLogin.MakeHotCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
+                var result = await HotCoffeForUserLogin.MakeHotCoffe(HotCoffeeService, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
 
                 var decrypt = await HotCoffeForUserLogin.MakeColdCoffe(HotCoffeeService, Crypto, LocalStorageServiceTest, jsRuntime, asdf, AuthUserDTO.id, "keyNameInStorage");
 

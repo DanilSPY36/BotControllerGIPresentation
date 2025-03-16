@@ -50,5 +50,9 @@ namespace BotControllerGIPresentation.GenericService
         {
             await jSRuntime.InvokeVoidAsync("localStorage.removeItem", key);
         }
+        public async Task ClearLocalStorage(IJSRuntime jSRuntime)
+        {
+            await jSRuntime.InvokeVoidAsync("localStorage.clear");
+        }
     }
 }

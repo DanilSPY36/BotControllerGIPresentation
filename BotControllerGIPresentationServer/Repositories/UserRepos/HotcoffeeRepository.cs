@@ -12,6 +12,14 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
         {
         }
 
+        public async Task<bool> DelAllItemsByUserId(int userId)
+        {
+            var result = await _context.Hotcoffees.Where(x => x.UserId == userId).ToListAsync();
+            _context.Hotcoffees.RemoveRange(result);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<Hotcoffee> GetHotCoffeeByUserId(int userId) 
         {
             var result = await _context.Hotcoffees.Where(x => x.UserId == userId).FirstOrDefaultAsync();
@@ -22,7 +30,7 @@ namespace BotControllerGIPresentationServer.Repositories.UserRepos
             }
             else 
             {
-                return null;
+                return null!;
             }
         }
     }
