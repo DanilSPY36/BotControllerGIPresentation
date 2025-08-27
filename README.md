@@ -28,5 +28,11 @@
 - **Entity Framework Core** — работа с базой данных (если применимо)
 - **SOLID-принципы** — архитектура проекта построена с соблюдением принципов SOLID для обеспечения масштабируемости, читаемости и лёгкой поддержки кода
 
-пара примеров 
+скриншоты проекта и телеграмм бота:
 ![добавление нового напитка в меню](SharedLibrary/ScreanShots/addItem.jpg)
+
+![добавление нового заведения](SharedLibrary/ScreanShots/createNewPlace.jpg)
+
+![поиск в TG боте](SharedLibrary/ScreanShots/searchItemTG.jpg)
+
+![поиск в TG боте](SharedLibrary/ScreanShots/clickItemTG.jpg)
